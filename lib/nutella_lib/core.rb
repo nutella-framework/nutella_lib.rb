@@ -1,19 +1,6 @@
 # This module is the wrapper around the whole nutella library.
 module Nutella
 
-
-  # Adding a convenience method to the string class to test if it contains properly formatted JSON
-  class String
-    def is_json?
-      begin
-        !!JSON.parse(self)
-      rescue
-        false
-      end
-    end
-  end
-
-
   # Initializes the nutella library
   def Nutella.init(args)
     if args.length < 2

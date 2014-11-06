@@ -68,13 +68,12 @@ module Nutella
       ready_to_go = 2
       response = nil
       # Subscribe to same channel to collect response
-      Net.subscribe(channel, lambda do |p|
-        p_h = JSON.parse(p)
-        if (p_h["id"]==id)
+      Net.subscribe(channel, lambda do |res|
+        if (res["id"]==id)
           ready_to_go -= 1
-          if ready_to_go
+          if ready_to_go==0
             Net.unsubscribe(channel)
-            response = p
+            response = res
           end
         end
       end)
@@ -178,7 +177,7 @@ module Nutella
         payload = message.to_json
       elsif message.is_json?
         p = JSON.parse(message)
-        message[:from] = Nutella.actor_name
+        p[:from] = Nutella.actor_name
         payload = p.to_json
       elsif message.is_a?(String)
         payload = { :payload => message, :from => Nutella.actor_name }.to_json
