@@ -1,5 +1,7 @@
 module Kernel
+
   def nutella
-    Nutella::Core.instance
+    Nutella
   end
+
 end
