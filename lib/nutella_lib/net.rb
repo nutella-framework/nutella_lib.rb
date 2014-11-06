@@ -103,13 +103,12 @@ module Nutella
       # Initialize flag that prevents handling of our own messages
       ready_to_go = false
       # Register callback to handle data the request response whenever it comes
-      Net.subscribe(channel, lambda do |m|
+      Net.subscribe(channel, lambda do |res|
         # Check that the message we receive is not the one we are sending ourselves.
-        p_h = JSON.parse(m)
-        if p_h["id"]==id
+        if res["id"]==id
           if ready_to_go
             Net.unsubscribe(channel)
-            callback.call(m)
+            callback.call(res)
           else
             ready_to_go = true
           end
@@ -121,15 +120,10 @@ module Nutella
 
     # Handles requests on a certain channel
     def Net.handle_requests (channel, &handler)
-      Net.subscribe(channel, lambda do |m|
-        begin
-          req = JSON.parse(m)
-          id = req["id"]
-          if id.nil?
-            raise
-          end
-        rescue
-          # Ignore anything that's not JSON
+      Net.subscribe(channel, lambda do |req|
+        # Ignore anything that doesn't have an id (i.e. not requests)
+        id = req["id"]
+        if id.nil?
           return
         end
         # Ignore recently processed requests
