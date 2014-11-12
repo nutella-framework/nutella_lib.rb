@@ -26,6 +26,7 @@ module Nutella
 
   # Nutella library modules loading
   def Nutella.net; Nutella::Net end
+  def Nutella.persist; Nutella::Persist end
 
 
   private

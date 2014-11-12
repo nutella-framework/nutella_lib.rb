@@ -1,5 +1,6 @@
 require 'nutella_lib/core'
 require 'nutella_lib/net'
+require 'nutella_lib/persist'
 
 # Gems used across the whole library
 require 'simple_ruby_mqtt_client'

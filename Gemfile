@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gem 'simple_ruby_mqtt_client', '~> 0.1.1', '>= 0.1.1'
+gem 'simple_ruby_mqtt_client', '~> 0.2.0', '>= 0.2.0'
 
 group :development do
   gem 'shoulda', '~> 3', '>= 3'

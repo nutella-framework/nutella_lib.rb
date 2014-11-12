@@ -147,6 +147,15 @@ module Nutella
     end
 
 
+    def Net.listen
+      begin
+        sleep
+      rescue Interrupt
+        # Simply returns
+      end
+    end
+
+
     private
 
     def Net.attach_message_id (message, id)
