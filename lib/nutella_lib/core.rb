@@ -8,13 +8,8 @@ module Nutella
       return
     end
     @run_id = args[0]
-    begin
-      @actor_name = Nutella.config_actor_name(@run_id)
-    rescue
-      STDERR.puts "Couldn't find nutella.json file, impossible to initialize library!"
-      return
-    end
-      @mqtt = SimpleMQTTClient.new(args[1], @actor_name)
+    @actor_name = Nutella.config_actor_name
+    @mqtt = SimpleMQTTClient.new(args[1])
   end
 
 
@@ -31,11 +26,10 @@ module Nutella
 
   private
 
-  # Extracts the actor name from nutella.json file and appends it to the run_id
-  def Nutella.config_actor_name (run_id)
-    h = JSON.parse( IO.read( "nutella.json" ) )
-    full_actor_name = run_id + '_' + h["name"]
-    full_actor_name[0, 23]
+  # Extracts the actor name based on the the folder where we are executing
+  def Nutella.config_actor_name
+    path = Dir.pwd
+    path[path.rindex('/')+1..path.length-1]
   end
 
 end

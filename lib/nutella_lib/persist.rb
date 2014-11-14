@@ -1,5 +1,6 @@
 require 'json'
 require 'pstore'
+require 'fileutils'
 
 module Nutella
 
@@ -7,7 +8,11 @@ module Nutella
 
     # This module exposes a single method to retrieve a JSONStore
     def Persist.getJsonStore(file_name)
-      JSONStore.new(file_name)
+      dir = file_name[0..file_name.rindex('/')]
+      file = file_name[file_name.rindex('/')..file_name.length-1]
+      new_dir = dir + Nutella.run_id
+      FileUtils.mkdir_p new_dir
+      JSONStore.new(new_dir + file)
     end
 
   end
@@ -42,6 +47,11 @@ module Nutella
     def to_h
       @table
     end
+
+    def merge!( hash )
+      @table.merge!(hash)
+    end
+
 
     def marshal_dump_supports_canonical_option?
       false
