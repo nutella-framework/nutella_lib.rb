@@ -11,15 +11,35 @@ module Nutella
       # Pad the channel
       new_channel = Nutella.run_id + '/' + channel
       # Subscribe
-      Nutella.mqtt.subscribe(new_channel, lambda do |message|
-        # Make sure the message is JSON, if not drop the message
-        begin
-          message_hash = JSON.parse(message)
-          callback.call(message_hash)
-        rescue
-          return
-        end
-      end)
+      # Depending on what type of channel we are subscribing to (wildcard or simple)
+      # register a different kind of callback
+      if Nutella.mqtt.is_channel_wildcard?(channel)
+        Nutella.mqtt.subscribe(
+            new_channel,
+            lambda do |message, channel|
+              # Make sure the message is JSON, if not drop the message
+              begin
+                message_hash = JSON.parse(message)
+                callback.call(message_hash, channel)
+              rescue
+                return
+              end
+            end
+        )
+      else
+        Nutella.mqtt.subscribe(
+            new_channel,
+            lambda do |message|
+              # Make sure the message is JSON, if not drop the message
+              begin
+                message_hash = JSON.parse(message)
+                callback.call(message_hash)
+              rescue
+                return
+              end
+            end
+        )
+      end
     end
 
     # Unsubscribe from a channel
