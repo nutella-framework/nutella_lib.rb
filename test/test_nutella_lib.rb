@@ -11,12 +11,4 @@ class TestNutellaLib < MiniTest::Test
   # end
 
 
-  # tests for sync/asynch_Req
-  # v = nutella.net.sync_req("quakes_schedule", '{"stringa":"json"}')
-  # v = nutella.net.sync_req("quakes_schedule", "messaggio")
-  # v = nutella.net.sync_req("quakes_schedule", {})
-  # v = nutella.net.sync_req("quakes_schedule", {:cane => "dio"})
-  # v = nutella.net.sync_req("quakes_schedule")
-
-
 end
