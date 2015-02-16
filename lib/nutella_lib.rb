@@ -1,9 +1,9 @@
 require 'nutella_lib/core'
 require 'nutella_lib/net'
 require 'nutella_lib/persist'
+require 'simple_mqtt_client/simple_mqtt_client'
 
 # Gems used across the whole library
-require 'simple_ruby_mqtt_client'
 require 'json'
 require 'set'
 

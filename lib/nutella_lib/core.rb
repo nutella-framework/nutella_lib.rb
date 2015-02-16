@@ -1,35 +1,55 @@
 # This module is the wrapper around the whole nutella library.
 module Nutella
 
+
   # Initializes the nutella library
-  def Nutella.init(args)
-    if args.length < 2
-      STDERR.puts "Couldn't read run_id and broker address from the command line, impossible to initialize library!"
-      return
-    end
-    @run_id = args[0]
-    @actor_name = Nutella.config_actor_name
-    @mqtt = SimpleMQTTClient.new(args[1])
+  # @param [String] run_id
+  # @param [String] broker_hostname
+  # @param [String] component_id
+  def self.init(run_id, broker_hostname, component_id)
+    @run_id = run_id
+    @component_id = component_id
+    @resource_id = nil
+    @mqtt = SimpleMQTTClient.new broker_hostname
   end
 
 
   # Accessors for module instance variables
-  def Nutella.run_id; @run_id end
-  def Nutella.actor_name; @actor_name end
-  def Nutella.mqtt; @mqtt end
+  def self.run_id; @run_id end
+  def self.component_id; @component_id end
+  def self.resource_id; @resource_id end
+  def self.mqtt; @mqtt end
+
 
 
   # Nutella library modules loading
-  def Nutella.net; Nutella::Net end
-  def Nutella.persist; Nutella::Persist end
+  def self.net; Nutella::Net end
+  def self.persist; Nutella::Persist end
 
 
-  private
+  # Utility functions
+
+
+  # Parse command line arguments
+  def self.parse_args(args)
+    if args.length < 2
+      STDERR.puts "Couldn't read run_id and broker address from the command line, impossible to initialize library!"
+      return
+    end
+    return args[0], args[1]
+  end
+
 
   # Extracts the actor name based on the the folder where we are executing
-  def Nutella.config_actor_name
+  def self.extract_component_id
     path = Dir.pwd
     path[path.rindex('/')+1..path.length-1]
+  end
+
+
+  # Sets the resource id
+  def self.set_resource_id( resource_id )
+    @resource_id = resource_id
   end
 
 end

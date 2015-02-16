@@ -1,25 +1,24 @@
 require 'helper'
 
-class TestNutellaLib < MiniTest::Test
+class TestSimpleRubyMqttClient < MiniTest::Test
 
-
-  def test_connect_and_send_receive_messages_correctly
-    cb_executed = false
-    nutella.init('my_run_id', 'ltg.evl.uic.edu', 'my_bot_component')
-    nutella.set_resource_id 'my_resource_id'
-    cb = lambda do |message, component_id, resource_id|
-      cb_executed = true
-      puts "Received message from #{component_id}/#{resource_id}. Message: #{message}"
-    end
-    nutella.net.subscribe('demo1', cb)
-    sleep 1
-    nutella.net.publish('demo1', 'test_message')
-    # Make sure we wait for the message to be delivered
-    sleep 1
-    assert cb_executed
-  end
-
-
+  # def test_connect_and_send_receive_messages_correctly
+  #   cb_executed = false
+  #   sc1 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
+  #   cb1 = lambda do |message|
+  #     cb_executed = true
+  #     assert_equal 'test-message-1', message
+  #     sc1.unsubscribe 'demo1', cb1
+  #   end
+  #   sc1.subscribe('demo1', cb1)
+  #
+  #   sc2 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
+  #   sc2.publish('demo1', 'test-message-1')
+  #   # Make sure we wait for the message to be delivered
+  #   sleep(1)
+  #   assert cb_executed
+  # end
+  #
   # def test_list_current_subscriptions_correctly
   #   sc3 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
   #   cb2 = lambda {|message| puts message}
@@ -53,6 +52,4 @@ class TestNutellaLib < MiniTest::Test
   #   sleep(1)
   #   assert_equal total, 4
   # end
-
-
 end
