@@ -20,13 +20,14 @@ module Nutella
       # Maintain unique subscriptions
       raise 'You can`t subscribe twice to the same channel`' if @subscriptions.include? channel
       # Pad the channel
-      new_channel = Nutella.run_id + '/' + channel
+      new_channel = "#{Nutella.run_id}/#{channel}"
       # Depending on what type of channel we are subscribing to (wildcard or simple)
       # register a different kind of callback
       if Nutella.mqtt.is_channel_wildcard?(channel)
         mqtt_cb = lambda do |message, channel|
           # Make sure the message is JSON, if not drop the message
           begin
+            channel.slice!("#{Nutella.run_id}/")
             type, payload, component_id, resource_id = extract_nutella_fields_from_publish_message message
             callback.call(payload, channel, component_id, resource_id) if type=='publish'
           rescue
