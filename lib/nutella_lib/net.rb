@@ -28,7 +28,7 @@ module Nutella
           # Make sure the message is JSON, if not drop the message
           begin
             channel.slice!("#{Nutella.run_id}/")
-            type, payload, component_id, resource_id = extract_nutella_fields_from_publish_message message
+            type, payload, component_id, resource_id = extract_nutella_fields_from_message message
             callback.call(payload, channel, component_id, resource_id) if type=='publish'
           rescue
             return
@@ -38,7 +38,7 @@ module Nutella
         mqtt_cb = lambda do |message|
           # Make sure the message is JSON, if not drop the message
           begin
-            type, payload, component_id, resource_id = extract_nutella_fields_from_publish_message message
+            type, payload, component_id, resource_id = extract_nutella_fields_from_message message
             callback.call(payload, component_id, resource_id)  if type=='publish'
           rescue
             return
@@ -92,33 +92,28 @@ module Nutella
     # string (the string will be wrapped into a JSON string automatically. Format: {"payload":"<message>"})
     # hash (the hash will be converted into a JSON string automatically)
     # json string (the JSON string will be sent as is)
-    def Net.sync_req (channel, message="")
-      # Generate message unique id
-      id = message.hash
-      # Attach id
-      begin
-        payload = Net.attach_message_id(message, id)
-      rescue
-        STDERR.puts $!
-        return
-      end
-      # Initialize response and response counter
-      ready_to_go = 2
+    def Net.sync_req (channel, message=nil)
+      # Pad channel
+      new_channel = "#{Nutella.run_id}/#{channel}"
+      # Prepare message
+      m, id = prepare_message_for_request message
+      # Initialize response
       response = nil
-      # Subscribe to same channel to collect response
-      Net.subscribe(channel, lambda do |res|
-        if (res["id"]==id)
-          ready_to_go -= 1
-          if ready_to_go==0
-            Net.unsubscribe(channel)
-            response = res
-          end
+      # Prepare callback
+      mqtt_cb = lambda do |message|
+        m_id = extract_id_from_message message
+        type, payload  = extract_nutella_fields_from_response message
+        if m_id==id && type=='response'
+          response = payload
+          Nutella.mqtt.unsubscribe( new_channel, mqtt_cb )
         end
-      end)
-      # Send message the message
-      Net.publish(channel, payload)
+      end
+      # Subscribe
+      Nutella.mqtt.subscribe( new_channel, mqtt_cb )
+      # Publish message
+      Nutella.mqtt.publish( new_channel, m )
       # Wait for the response to come back
-      sleep(0.5) until ready_to_go==0
+      sleep(0.1) while response.nil?
       response
     end
 
@@ -130,60 +125,48 @@ module Nutella
     # hash (the hash will be converted into a JSON string automatically)
     # json string (the JSON string will be sent as is)
     def Net.async_req (channel, message="", callback)
-      # Generate message unique id
-      id = message.hash
-      # Attach id
-      begin
-        payload = Net.attach_message_id(message, id)
-      rescue
-        STDERR.puts $!
-        return
-      end
-      # Initialize flag that prevents handling of our own messages
-      ready_to_go = false
-      # Register callback to handle data the request response whenever it comes
-      Net.subscribe(channel, lambda do |res|
-        # Check that the message we receive is not the one we are sending ourselves.
-        if res["id"]==id
-          if ready_to_go
-            Net.unsubscribe(channel)
-            callback.call(res)
-          else
-            ready_to_go = true
-          end
+      # Pad channel
+      new_channel = "#{Nutella.run_id}/#{channel}"
+      # Prepare message
+      m, id = prepare_message_for_request message
+      # Initialize response
+      # Prepare callback
+      mqtt_cb = lambda do |message|
+        m_id = extract_id_from_message message
+        type, payload  = extract_nutella_fields_from_response message
+        if m_id==id && type=='response'
+          callback.call(payload)
+          Nutella.mqtt.unsubscribe( new_channel, mqtt_cb )
         end
-      end)
-      # Send message
-      Net.publish(channel, payload)
+      end
+      # Subscribe
+      Nutella.mqtt.subscribe( new_channel, mqtt_cb )
+      # Publish message
+      Nutella.mqtt.publish( new_channel, m )
     end
 
 
-    # Handles requests on a certain channel
-    def Net.handle_requests (channel, &handler)
-      Net.subscribe(channel, lambda do |req|
-        # Ignore anything that doesn't have an id (i.e. not requests)
-        id = req["id"]
-        if id.nil?
-          return
-        end
-        # Ignore recently processed requests
-        if @last_requests.nil?
-          @last_requests = Set.new
-        end
-        if @last_requests.include?(id)
-          @last_requests.delete(id)
-          return
-        end
-        @last_requests.add(id)
-        req.delete("id")
-        res = handler.call(req)
+
+    # Handle requests
+    def Net.handle_requests( channel, callback)
+      # Pad the channel
+      new_channel = "#{Nutella.run_id}/#{channel}"
+      mqtt_cb = lambda do |request|
         begin
-          res_and_id = attach_message_id(res, id)
-          Net.publish(channel, res_and_id)
+          # Extract nutella fields
+          type, payload, component_id, resource_id = extract_nutella_fields_from_message request
+          id = extract_id_from_message request
+          # Only handle requests that have proper id set
+          return if type!='request' || id.nil?
+          m = Net.prepare_message_for_response( callback.call( payload, component_id, resource_id ), id )
+          Nutella.mqtt.publish( new_channel, m )
+          # Assemble the response and check that it's proper JSON
         rescue
-          STDERR.puts 'When handling a request you need to return JSON'
+          return
         end
-      end)
+      end
+      # Subscribe to the channel
+      Nutella.mqtt.subscribe(new_channel, mqtt_cb)
     end
 
 
@@ -199,13 +182,22 @@ module Nutella
 
     private
 
-    def Net.extract_nutella_fields_from_publish_message(message)
+    def Net.extract_nutella_fields_from_message(message)
       mh = JSON.parse(message)
       from = mh['from'].split('/')
       r_id = from.length==1 ? nil : from[1]
       return mh['type'], mh['payload'], from[0], r_id
     end
 
+    def Net.extract_id_from_message( message )
+      mh = JSON.parse(message)
+      mh['id']
+    end
+
+    def Net.extract_nutella_fields_from_response( message )
+      mh = JSON.parse(message)
+      return mh['type'], mh['payload']
+    end
 
     def Net.prepare_message_for_publish( message )
       from = Nutella.resource_id.nil? ? Nutella.component_id : "#{Nutella.component_id}/#{Nutella.resource_id}"
@@ -215,27 +207,22 @@ module Nutella
       {type: 'publish', from: from, payload: message}.to_json
     end
 
-
-    def Net.attach_message_id (message, id)
-      if message.is_a?(Hash)
-        message[:id] = id
-        payload = message.to_json
-      elsif message.is_json?
-        p = JSON.parse(message)
-        p[:id] = id
-        payload = p.to_json
-      elsif message.is_a?(String)
-        payload = { :payload => message, :id => id }.to_json
-      else
-        raise 'Your request is not JSON!'
+    def Net.prepare_message_for_response( message, id )
+      from = Nutella.resource_id.nil? ? Nutella.component_id : "#{Nutella.component_id}/#{Nutella.resource_id}"
+      if message.nil?
+        return {id: id, type: 'response', from: from}.to_json
       end
-      payload
+      {id: id, type: 'response', from: from, payload: message}.to_json
     end
-
 
     def Net.prepare_message_for_request( message )
-
+      from = Nutella.resource_id.nil? ? Nutella.component_id : "#{Nutella.component_id}/#{Nutella.resource_id}"
+      if message.nil?
+        return {id: message.hash, type: 'request', from: from}.to_json, message.hash
+      end
+      return {id: message.hash, type: 'request', from: from, payload: message}.to_json, message.hash
     end
+
 
   end
 end
