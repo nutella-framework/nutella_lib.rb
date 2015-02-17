@@ -24,12 +24,12 @@ module Nutella
       # Depending on what type of channel we are subscribing to (wildcard or simple)
       # register a different kind of callback
       if Nutella.mqtt.is_channel_wildcard?(channel)
-        mqtt_cb = lambda do |message, channel|
+        mqtt_cb = lambda do |mqtt_message, mqtt_channel|
           # Make sure the message is JSON, if not drop the message
           begin
-            channel.slice!("#{Nutella.run_id}/")
-            type, payload, component_id, resource_id = extract_nutella_fields_from_message message
-            callback.call(payload, channel, component_id, resource_id) if type=='publish'
+            mqtt_channel.slice!("#{Nutella.run_id}/")
+            type, payload, component_id, resource_id = extract_fields_from_message mqtt_message
+            callback.call(payload, mqtt_channel, component_id, resource_id) if type=='publish'
           rescue
             return
           end
@@ -38,7 +38,7 @@ module Nutella
         mqtt_cb = lambda do |message|
           # Make sure the message is JSON, if not drop the message
           begin
-            type, payload, component_id, resource_id = extract_nutella_fields_from_message message
+            type, payload, component_id, resource_id = extract_fields_from_message message
             callback.call(payload, component_id, resource_id)  if type=='publish'
           rescue
             return
@@ -100,9 +100,9 @@ module Nutella
       # Initialize response
       response = nil
       # Prepare callback
-      mqtt_cb = lambda do |message|
-        m_id = extract_id_from_message message
-        type, payload  = extract_nutella_fields_from_response message
+      mqtt_cb = lambda do |mqtt_message|
+        m_id = extract_id_from_message mqtt_message
+        type, payload  = extract_fields_from_response mqtt_message
         if m_id==id && type=='response'
           response = payload
           Nutella.mqtt.unsubscribe( new_channel, mqtt_cb )
@@ -118,13 +118,13 @@ module Nutella
     end
 
 
-    # Performs an asynchronosus request
+    # Performs an asynchronous request
     # Message can be:
     # empty (equivalent of a GET)
     # string (the string will be wrapped into a JSON string automatically. Format: {"payload":"<message>"})
     # hash (the hash will be converted into a JSON string automatically)
     # json string (the JSON string will be sent as is)
-    def Net.async_req (channel, message="", callback)
+    def Net.async_req (channel, message=nil, callback)
       # Pad channel
       new_channel = "#{Nutella.run_id}/#{channel}"
       # Prepare message
@@ -133,7 +133,7 @@ module Nutella
       # Prepare callback
       mqtt_cb = lambda do |message|
         m_id = extract_id_from_message message
-        type, payload  = extract_nutella_fields_from_response message
+        type, payload  = extract_fields_from_response message
         if m_id==id && type=='response'
           callback.call(payload)
           Nutella.mqtt.unsubscribe( new_channel, mqtt_cb )
@@ -154,7 +154,7 @@ module Nutella
       mqtt_cb = lambda do |request|
         begin
           # Extract nutella fields
-          type, payload, component_id, resource_id = extract_nutella_fields_from_message request
+          type, payload, component_id, resource_id = extract_fields_from_message request
           id = extract_id_from_message request
           # Only handle requests that have proper id set
           return if type!='request' || id.nil?
@@ -182,7 +182,7 @@ module Nutella
 
     private
 
-    def Net.extract_nutella_fields_from_message(message)
+    def Net.extract_fields_from_message(message)
       mh = JSON.parse(message)
       from = mh['from'].split('/')
       r_id = from.length==1 ? nil : from[1]
@@ -194,7 +194,7 @@ module Nutella
       mh['id']
     end
 
-    def Net.extract_nutella_fields_from_response( message )
+    def Net.extract_fields_from_response( message )
       mh = JSON.parse(message)
       return mh['type'], mh['payload']
     end
