@@ -48,31 +48,31 @@ class TestNutellaLib < MiniTest::Test
   # end
 
 
-  # def test_request_response
-  #   nutella.init('my_run_id', 'ltg.evl.uic.edu', 'my_bot_component')
-  #   nutella.set_resource_id 'my_resource_id'
-  #
-  #   nutella.net.subscribe('demo1', lambda do |message, component_id, resource_id|
-  #     puts "Received a message from #{component_id}/#{resource_id}. Message: #{message}"
-  #   end)
-  #
-  #   nutella.net.handle_requests( 'demo1', lambda do |message, component_id, resource_id|
-  #     puts "We received a request: message #{message}, from #{component_id}/#{resource_id}"
-  #     #Then we are going to return some JSON
-  #     {my:'json'}
-  #   end)
-  #
-  #   response = nutella.net.sync_req( 'demo1', 'my request is a string' )
-  #   puts 'Response to sync'
-  #   p response
-  #
-  #   nutella.net.async_req( 'demo1', 'my request is a string', lambda do |response|
-  #     puts 'Response to async'
-  #     p response
-  #   end)
-  #
-  #   nutella.net.listen
-  # end
+  def test_request_response
+    nutella.init('my_run_id', 'ltg.evl.uic.edu', 'my_bot_component')
+    nutella.set_resource_id 'my_resource_id'
+
+    nutella.net.subscribe('demo1', lambda do |message, component_id, resource_id|
+      puts "Received a message from #{component_id}/#{resource_id}. Message: #{message}"
+    end)
+
+    nutella.net.handle_requests( 'demo1', lambda do |message, component_id, resource_id|
+      puts "We received a request: message #{message}, from #{component_id}/#{resource_id}"
+      #Then we are going to return some JSON
+      {my:'json'}
+    end)
+
+    response = nutella.net.sync_request( 'demo1', 'my request is a string' )
+    puts 'Response to sync'
+    p response
+
+    nutella.net.async_request( 'demo1', 'my request is a string', lambda do |response|
+      puts 'Response to async'
+      p response
+    end)
+
+    nutella.net.listen
+  end
 
 
 end

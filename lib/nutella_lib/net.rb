@@ -92,7 +92,7 @@ module Nutella
     # string (the string will be wrapped into a JSON string automatically. Format: {"payload":"<message>"})
     # hash (the hash will be converted into a JSON string automatically)
     # json string (the JSON string will be sent as is)
-    def Net.sync_req (channel, message=nil)
+    def Net.sync_request (channel, message=nil)
       # Pad channel
       new_channel = "#{Nutella.run_id}/#{channel}"
       # Prepare message
@@ -124,7 +124,7 @@ module Nutella
     # string (the string will be wrapped into a JSON string automatically. Format: {"payload":"<message>"})
     # hash (the hash will be converted into a JSON string automatically)
     # json string (the JSON string will be sent as is)
-    def Net.async_req (channel, message=nil, callback)
+    def Net.async_request (channel, message=nil, callback)
       # Pad channel
       new_channel = "#{Nutella.run_id}/#{channel}"
       # Prepare message
