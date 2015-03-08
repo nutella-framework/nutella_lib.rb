@@ -1,6 +1,7 @@
 require 'json'
 require 'pstore'
 require 'fileutils'
+require 'thread'
 
 module Nutella
 
@@ -32,12 +33,24 @@ module Nutella
 
   class JSONStore < PStore
 
+    def initialize(path)
+      super
+      @semaphore = Mutex.new
+    end
+
     def dump(table)
       table.to_json
     end
 
     def load(content)
       JSON.parse(content)
+    end
+
+    def transaction(read_only=false, &block)
+      @semaphore.synchronize {
+        # access shared resource
+        super
+      }
     end
 
     # Dumps the whole store to hash
@@ -69,5 +82,3 @@ module Nutella
 
 
 end
-
-
