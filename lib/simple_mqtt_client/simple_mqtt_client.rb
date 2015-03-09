@@ -1,13 +1,12 @@
 require 'mqtt'
 
-# Simple MQTT client
-#  @author Alessandro Gnoli <tebemis@gmail.com>
+# A simple MQTT client
 class SimpleMQTTClient
 
   ## Private instance variables
-  # @channels is a hash that associates to each channels a set of callbacks
-  # @client low-level mqtt client
-  # @thread the packet reader thread
+  # `@channels` is a hash that associates to each channels a set of callbacks
+  # `@client` low-level mqtt client
+  # `@thread` the packet reader thread
 
 
   # Creates a new MQTT client

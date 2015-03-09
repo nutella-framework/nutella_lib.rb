@@ -5,6 +5,7 @@ require 'thread'
 
 module Nutella
 
+  # Implements basic run-dependent persistence for nutella bots.
   module Persist
 
     # This module exposes a single method to retrieve a JSONStore

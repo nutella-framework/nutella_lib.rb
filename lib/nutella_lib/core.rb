@@ -27,16 +27,21 @@ module Nutella
   end
 
 
-  # Accessors for module instance variables
+  # Accessors for app_id
   def self.app_id; @app_id end
+  # Accessors for run_id
   def self.run_id; @run_id end
+  # Accessors for component_id
   def self.component_id; @component_id end
+  # Accessors for resource_id
   def self.resource_id; @resource_id end
+  # Accessors for mqtt client
   def self.mqtt; @mqtt end
 
 
-  # Nutella library modules loading
+  # Provides access to the net module
   def self.net; Nutella::Net end
+  # Provides access to the persist module
   def self.persist; Nutella::Persist end
 
 
@@ -44,6 +49,7 @@ module Nutella
 
 
   # Parse command line arguments for run level components
+  #
   # @param [Array] args command line arguments array
   # @return [String, String, String] broker, app_id and run_id
   def self.parse_run_component_args(args)
@@ -56,6 +62,7 @@ module Nutella
 
 
   # Parse command line arguments for app level components
+  #
   # @param [Array] args command line arguments array
   # @return [String, String] broker and app_id
   def self.parse_app_component_args(args)
@@ -67,7 +74,8 @@ module Nutella
   end
 
 
-  # Extracts the component name based on the the folder where we are executing
+  # Extracts the component name from the folder where the code for this component is located
+  #
   # @return [String] the component name
   def self.extract_component_id
     path = Dir.pwd
@@ -76,6 +84,7 @@ module Nutella
 
 
   # Sets the resource id
+  #
   # @param [String] resource_id the resource id (i.e. the particular instance of this component)
   def self.set_resource_id( resource_id )
     @resource_id = resource_id

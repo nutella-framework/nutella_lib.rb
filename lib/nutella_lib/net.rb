@@ -1,24 +1,24 @@
 module Nutella
 
-  # This class implements the pub/sub and request/response nutella protocol
+  # This module implements the pub/sub and request/response APIs at the run level
   module Net
 
     # Store the subscriptions and the relative callbacks
     @subscriptions = []
     @callbacks = []
 
-    # Sub-modules loading
-    def self.app; Nutella::Net::App end
+    # Provides access to the net.app sub-module
+    def Net.app; Nutella::Net::App end
 
 
-    # Subscribe to a channel or to a set of channels.
+    # Subscribes to a channel or to a set of channels.
     #
-    # @param [String] channel the channel or filter we are subscribing to. This can
-    #   contain wildcard characters.
-    # @param [Proc] callback a lambda expression that takes as parameters:
-    # - [String] the received message. Messages that are not JSON are discarded.
-    # - [String][optional] the channel the message was received on (only for wildcard subscriptions)
-    # - [Hash] the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
+    # @param [String] channel the channel or filter we are subscribing to. Can contain wildcard(s)
+    # @param [Proc] callback a lambda expression that is fired whenever a message is received.
+    #   The passed callback takes the following parameters:
+    #   - [String] message: the received message. Messages that are not JSON are discarded.
+    #   - [String] channel: the channel the message was received on (optional, only for wildcard subscriptions)
+    #   - [Hash] from: the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
     def Net.subscribe (channel, callback)
       # Maintain unique subscriptions
       raise 'You can`t subscribe twice to the same channel`' if @subscriptions.include? channel
@@ -58,9 +58,9 @@ module Nutella
     end
 
 
-    # Unsubscribe from a channel
-
-    # @param [String] channel we want to unsubscribe from. Can contain wildcards.
+    # Un-subscribes from a channel
+    #
+    # @param [String] channel we want to unsubscribe from. Can contain wildcard(s).
     def Net.unsubscribe(channel)
       idx = @subscriptions.index channel
       # If we are not subscribed to this channel, return (no error is given)
@@ -75,11 +75,10 @@ module Nutella
 
 
     # Publishes a message to a channel
-    # Message can be:
-    # - nil/empty
-    # - a string
-    # - a hash
-    # - some JSON
+    #
+    # @param [String] channel we want to publish the message to. *CANNOT* contain wildcard(s)!
+    # @param [Object] message the message we are publishing. This can be,
+    #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
     def Net.publish(channel, message=nil)
       # Throw exception if trying to publish something that is not JSON
       begin
@@ -91,12 +90,11 @@ module Nutella
     end
 
 
-    # Performs a synchronous request
-    # Message can be:
-    # - nil/empty
-    # - a string
-    # - a hash
-    # - some JSON
+    # Performs a synchronous request.
+    #
+    # @param [String] channel we want to make the request to. *CANNOT* contain wildcard(s)!
+    # @param [Object] message the body of request. This can be,
+    #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
     def Net.sync_request ( channel, message=nil )
       # Pad channel
       padded_ch = pad_to_run_ch(channel)
@@ -123,11 +121,10 @@ module Nutella
 
 
     # Performs an asynchronous request
-    # Message can be:
-    # empty (equivalent of a GET)
-    # string (the string will be wrapped into a JSON string automatically. Format: {"payload":"<message>"})
-    # hash (the hash will be converted into a JSON string automatically)
-    # json string (the JSON string will be sent as is)
+    #
+    # @param [String] channel we want to make the request to. *CANNOT* contain wildcard(s)!
+    # @param [Object] message the body of request. This can be,
+    #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
     def Net.async_request ( channel, message=nil, callback )
       # Pad channel
       padded_ch = pad_to_run_ch(channel)
@@ -148,7 +145,14 @@ module Nutella
     end
 
 
-    # Handle requests
+    # Handles requests on a certain channel
+    #
+    # @param [String] channel we want to listen for requests on. Can contain wildcard(s).
+    # @param [Proc] callback a lambda expression that is fired whenever a message is received.
+    #   The passed callback takes the following parameters:
+    #   - [String] the received message (payload). Messages that are not JSON are discarded.
+    #   - [Hash] the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
+    #   - [*returns* Hash] The response sent back to the client that performed the request. Whatever is returned by the callback is marshaled into a JSON string and sent via MQTT.
     def Net.handle_requests( channel, callback )
       # Pad the channel
       padded_ch = pad_to_run_ch(channel)
@@ -174,12 +178,14 @@ module Nutella
     end
 
 
-    # Listens for incoming messages
+    # Listens for incoming messages. All this function
+    # does is to put the thread to sleep and wait for something to
+    # happen over the network to wake up.
     def Net.listen
       begin
         sleep
       rescue Interrupt
-        # Simply returns
+        # Simply returns once interrupted
       end
     end
 
