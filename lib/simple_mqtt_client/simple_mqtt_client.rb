@@ -62,6 +62,8 @@ class SimpleMQTTClient
   #  @param [String] channel the channel we are publishing to
   #  @param [String] message the message we are publishing
   def publish( channel, message )
+    # Check we are not publishing to a wildcard channel
+    STDERR.puts 'Can\'t publish to a wildcard channel!' if is_channel_wildcard? channel
     @client.publish(channel, message)
   end
 

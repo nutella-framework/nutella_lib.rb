@@ -4,12 +4,12 @@ class TestNutellaLib < MiniTest::Test
 
 
   # def test_connect_and_send_receive_messages_correctly
+  #   nutella.init('localhost', 'my_app_id', 'my_run_id' , 'my_component_id')
   #   cb_executed = false
-  #   nutella.init('my_run_id', 'ltg.evl.uic.edu', 'my_bot_component')
   #   nutella.set_resource_id 'my_resource_id'
-  #   cb = lambda do |message, component_id, resource_id|
+  #   cb = lambda do |message, from|
   #     cb_executed = true
-  #     puts "Received message from #{component_id}/#{resource_id}. Message: #{message}"
+  #     puts "Received message from #{from['component_id']}/#{from['resource_id']}. Message: #{message}"
   #   end
   #   nutella.net.subscribe('demo1', cb)
   #   sleep 1
@@ -18,15 +18,15 @@ class TestNutellaLib < MiniTest::Test
   #   sleep 1
   #   assert cb_executed
   # end
-  #
-  #
-  # def test_connect_and_send_receive_wildcard_messages_correctly
+
+
+  # def test_connect_and_receive_wildcard_messages_correctly
   #   cb_executed = false
-  #   nutella.init('my_run_id', 'ltg.evl.uic.edu', 'my_bot_component')
+  #   nutella.init('localhost', 'my_app_id', 'my_run_id' , 'my_component_id')
   #   nutella.set_resource_id 'my_resource_id'
-  #   cb = lambda do |message, channel, component_id, resource_id|
+  #   cb = lambda do |message, channel, from|
   #     cb_executed = true
-  #     puts "Received message on #{channel} from #{component_id}/#{resource_id}. Message: #{message}"
+  #     puts "Received message on #{channel} from #{from['component_id']}/#{from['resource_id']}. Message: #{message}"
   #   end
   #   nutella.net.subscribe('demo1/#', cb)
   #   sleep 1
@@ -38,10 +38,10 @@ class TestNutellaLib < MiniTest::Test
 
 
   # def test_multiple_subscriptions
-  #   nutella.init('my_run_id', 'ltg.evl.uic.edu', 'my_bot_component')
+  #   nutella.init('localhost', 'my_app_id', 'my_run_id' , 'my_component_id')
   #   nutella.set_resource_id 'my_resource_id'
-  #   cb = lambda do |message, component_id, resource_id|
-  #     puts "Received message #{component_id}/#{resource_id}. Message: #{message}"
+  #   cb = lambda do |message, from|
+  #     puts "Received message #{from['component_id']}/#{from['resource_id']}. Message: #{message}"
   #   end
   #   nutella.net.subscribe('demo1', cb)
   #   nutella.net.subscribe('demo1', cb) # This must raise an error
@@ -49,16 +49,16 @@ class TestNutellaLib < MiniTest::Test
 
 
   # def test_request_response
-  #   nutella.init('my_run_id', 'ltg.evl.uic.edu', 'my_bot_component')
+  #   nutella.init('localhost', 'my_app_id', 'my_run_id' , 'my_component_id')
   #   nutella.set_resource_id 'my_resource_id'
   #
-  #   nutella.net.subscribe('demo1', lambda do |message, component_id, resource_id|
-  #     puts "Received a message from #{component_id}/#{resource_id}. Message: #{message}"
+  #   nutella.net.subscribe('demo1', lambda do |message, from|
+  #     puts "Received a message from #{from['component_id']}/#{from['resource_id']}. Message: #{message}"
   #   end)
   #
-  #   nutella.net.handle_requests( 'demo1', lambda do |message, component_id, resource_id|
-  #     puts "We received a request: message #{message}, from #{component_id}/#{resource_id}"
-  #     #Then we are going to return some JSON
+  #   nutella.net.handle_requests( 'demo1', lambda do |message, from|
+  #     puts "We received a request: message #{message}, from #{from['component_id']}/#{from['resource_id']}."
+  #     #Then we are going to return some random JSON
   #     {my:'json'}
   #   end)
   #

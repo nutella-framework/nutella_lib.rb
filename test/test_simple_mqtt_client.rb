@@ -2,6 +2,7 @@ require 'helper'
 
 class TestSimpleRubyMqttClient < MiniTest::Test
 
+
   # def test_connect_and_send_receive_messages_correctly
   #   cb_executed = false
   #   sc1 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
@@ -19,6 +20,7 @@ class TestSimpleRubyMqttClient < MiniTest::Test
   #   assert cb_executed
   # end
   #
+  #
   # def test_list_current_subscriptions_correctly
   #   sc3 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
   #   cb2 = lambda {|message| puts message}
@@ -32,14 +34,16 @@ class TestSimpleRubyMqttClient < MiniTest::Test
   #   assert_equal sc3.get_subscribed_channels['channel_3'].length, 1
   # end
   #
+  #
   # def test_recognize_wildcard_patters_correctly
   #   sc4 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
   #   sc4.subscribe('run_id/#', lambda {|m| puts m})
   #   refute_nil sc4.send(:get_callbacks, 'run_id/one')
   #   refute_nil sc4.send(:get_callbacks, 'run_id/one/two')
   # end
-  #
-  #  def test_multiple_subscriptions
+
+
+  # def test_multiple_simple_subscriptions
   #   sc5 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
   #   total = 0
   #   cb1 = lambda { |message| total += 3; puts "CB1: #{message}"}
@@ -54,29 +58,46 @@ class TestSimpleRubyMqttClient < MiniTest::Test
   # end
 
 
-  def test_wildcard_regex
-    sc1 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
-    # Multi-level
-    assert sc1.send :matches_wildcard_pattern, '/any/channel', '#'
-    assert sc1.send :matches_wildcard_pattern, 'any/channel', '#'
-    assert sc1.send :matches_wildcard_pattern, '', '#'
-    assert sc1.send :matches_wildcard_pattern, '/a/channel', '/a/#'
-    # One single-level
-    assert sc1.send :matches_wildcard_pattern, 'a_channel', '+'
-    assert sc1.send :matches_wildcard_pattern, '/a_channel', '/+'
-    assert sc1.send :matches_wildcard_pattern, 'a/channel', 'a/+'
-    assert sc1.send :matches_wildcard_pattern, 'a/channel', '+/channel'
-    assert sc1.send :matches_wildcard_pattern, '/a/channel', '/+/channel'
-    assert sc1.send :matches_wildcard_pattern, '/a/channel/yup', '/a/+/yup'
-    # Two single-level
-    assert sc1.send :matches_wildcard_pattern, 'a/channel', '+/+'
-    assert sc1.send :matches_wildcard_pattern, '/a/channel', '/+/+'
-    assert sc1.send :matches_wildcard_pattern, '/a/channel/yup', '/+/+/yup'
-    # Mix, Multi-level, one single level
-    assert sc1.send :matches_wildcard_pattern, '/a/channel/yup', '/+/channel/#'
-    # Mix, Multi-level, two single level
-    assert sc1.send :matches_wildcard_pattern, '/a/channel/yup/another', '/+/+/yup/#'
-  end
+  # def test_multiple_mixed_subscriptions
+  #   sc6 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
+  #   total = 0
+  #   cba = lambda { |message| total += 1; puts "CBA: #{message}"}
+  #   cbb = lambda { |message| total += 2; puts "CBB: #{message}"}
+  #   cbc = lambda { |message| total += 3; puts "CBC: #{message}"}
+  #   sc6.subscribe('demo4/demo5/demo6', cba)
+  #   sc6.subscribe('demo4/demo5/#', cbb)
+  #   sc6.subscribe('demo4/+/demo6', cbc)
+  #   sc7 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
+  #   sc7.publish('demo4/demo5/demo6', 'test-message-3')
+  #   # Make sure we wait for the message to be delivered
+  #   sleep(1)
+  #   assert_equal total, 6
+  # end
+
+
+  # def test_wildcard_regex
+  #   sc7 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
+  #   # Multi-level
+  #   assert sc7.send :matches_wildcard_pattern, '/any/channel', '#'
+  #   assert sc7.send :matches_wildcard_pattern, 'any/channel', '#'
+  #   assert sc7.send :matches_wildcard_pattern, '', '#'
+  #   assert sc7.send :matches_wildcard_pattern, '/a/channel', '/a/#'
+  #   # One single-level
+  #   assert sc7.send :matches_wildcard_pattern, 'a_channel', '+'
+  #   assert sc7.send :matches_wildcard_pattern, '/a_channel', '/+'
+  #   assert sc7.send :matches_wildcard_pattern, 'a/channel', 'a/+'
+  #   assert sc7.send :matches_wildcard_pattern, 'a/channel', '+/channel'
+  #   assert sc7.send :matches_wildcard_pattern, '/a/channel', '/+/channel'
+  #   assert sc7.send :matches_wildcard_pattern, '/a/channel/yup', '/a/+/yup'
+  #   # Two single-level
+  #   assert sc7.send :matches_wildcard_pattern, 'a/channel', '+/+'
+  #   assert sc7.send :matches_wildcard_pattern, '/a/channel', '/+/+'
+  #   assert sc7.send :matches_wildcard_pattern, '/a/channel/yup', '/+/+/yup'
+  #   # Mix, Multi-level, one single level
+  #   assert sc7.send :matches_wildcard_pattern, '/a/channel/yup', '/+/channel/#'
+  #   # Mix, Multi-level, two single level
+  #   assert sc7.send :matches_wildcard_pattern, '/a/channel/yup/another', '/+/+/yup/#'
+  # end
 
 
 end
