@@ -52,4 +52,31 @@ class TestSimpleRubyMqttClient < MiniTest::Test
   #   sleep(1)
   #   assert_equal total, 4
   # end
+
+
+  def test_wildcard_regex
+    sc1 = SimpleMQTTClient.new 'ltg.evl.uic.edu'
+    # Multi-level
+    assert sc1.send :matches_wildcard_pattern, '/any/channel', '#'
+    assert sc1.send :matches_wildcard_pattern, 'any/channel', '#'
+    assert sc1.send :matches_wildcard_pattern, '', '#'
+    assert sc1.send :matches_wildcard_pattern, '/a/channel', '/a/#'
+    # One single-level
+    assert sc1.send :matches_wildcard_pattern, 'a_channel', '+'
+    assert sc1.send :matches_wildcard_pattern, '/a_channel', '/+'
+    assert sc1.send :matches_wildcard_pattern, 'a/channel', 'a/+'
+    assert sc1.send :matches_wildcard_pattern, 'a/channel', '+/channel'
+    assert sc1.send :matches_wildcard_pattern, '/a/channel', '/+/channel'
+    assert sc1.send :matches_wildcard_pattern, '/a/channel/yup', '/a/+/yup'
+    # Two single-level
+    assert sc1.send :matches_wildcard_pattern, 'a/channel', '+/+'
+    assert sc1.send :matches_wildcard_pattern, '/a/channel', '/+/+'
+    assert sc1.send :matches_wildcard_pattern, '/a/channel/yup', '/+/+/yup'
+    # Mix, Multi-level, one single level
+    assert sc1.send :matches_wildcard_pattern, '/a/channel/yup', '/+/channel/#'
+    # Mix, Multi-level, two single level
+    assert sc1.send :matches_wildcard_pattern, '/a/channel/yup/another', '/+/+/yup/#'
+  end
+
+
 end
