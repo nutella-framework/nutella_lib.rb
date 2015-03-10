@@ -21,7 +21,11 @@ class SimpleMQTTClient
         # the ones specific to this channel with a single parameter (message)
         # the ones associated to a wildcard channel, with two parameters (message and channel)
         cbs = get_callbacks channel
-        cbs.each { |cb| (@channels.has_key? channel) ? cb.call(message) : cb.call(message, channel) }
+        begin
+          cbs.each { |cb| cb.parameters.length==1 ? cb.call(message) : cb.call(message, channel) }
+        rescue ArgumentError
+          STDERR.puts "The callback you passed for #{channel} has the #{$!}"
+        end
       end
     end
   end
