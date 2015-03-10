@@ -75,5 +75,22 @@ class TestNutellaNetApp < MiniTest::Test
   #   sleep(2)
   # end
 
+  # def test_app_run_send_receive
+  #   nutella.init_as_app_component('localhost', 'my_app_id', 'my_component_id')
+  #   nutella.set_resource_id 'my_resource_id_4'
+  #   cb_executed = false
+  #   cb = lambda do |message, from|
+  #     cb_executed = true
+  #     puts "Received message from #{from['component_id']}/#{from['resource_id']}. Message: #{message}"
+  #   end
+  #   nutella.net.app.subscribe_to_run('one_of_my_run_ids', 'demo4', cb)
+  #   sleep 1
+  #   nutella.net.app.publish_to_run('one_of_my_run_ids', 'demo4', 'test_message')
+  #   # Make sure we wait for the message to be delivered
+  #   sleep 1
+  #   assert cb_executed
+  # end
+
+  # TODO do more tests for app to run APIs
 
 end

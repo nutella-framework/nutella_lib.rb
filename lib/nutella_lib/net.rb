@@ -20,7 +20,7 @@ module Nutella
     #   - [String] channel: the channel the message was received on (optional, only for wildcard subscriptions)
     #   - [Hash] from: the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
     def Net.subscribe( channel, callback )
-      subscribe_to( channel, callback, :pad_to_run_ch, :un_pad_run_ch )
+      subscribe_to( channel, callback, Nutella.app_id, Nutella.run_id)
     end
 
 
@@ -28,7 +28,7 @@ module Nutella
     #
     # @param [String] channel we want to unsubscribe from. Can contain wildcard(s).
     def Net.unsubscribe( channel )
-      unsubscribe_to( channel, :pad_to_run_ch)
+      unsubscribe_to( channel, Nutella.app_id, Nutella.run_id)
     end
 
 
@@ -38,7 +38,7 @@ module Nutella
     # @param [Object] message the message we are publishing. This can be,
     #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
     def Net.publish( channel, message=nil )
-      publish_to( channel, message, :pad_to_run_ch )
+      publish_to( channel, message, Nutella.app_id, Nutella.run_id)
     end
 
 
@@ -48,7 +48,7 @@ module Nutella
     # @param [Object] message the body of request. This can be,
     #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
     def Net.sync_request( channel, message=nil )
-      sync_request_to(channel, message, :pad_to_run_ch)
+      sync_request_to(channel, message, Nutella.app_id, Nutella.run_id)
     end
 
 
@@ -58,7 +58,7 @@ module Nutella
     # @param [Object] message the body of request. This can be,
     #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
     def Net.async_request( channel, message=nil, callback )
-      async_request_to(channel, message, callback, :pad_to_run_ch)
+      async_request_to(channel, message, callback, Nutella.app_id, Nutella.run_id)
     end
 
 
@@ -71,7 +71,7 @@ module Nutella
     #   - [Hash] the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
     #   - [*returns* Hash] The response sent back to the client that performed the request. Whatever is returned by the callback is marshaled into a JSON string and sent via MQTT.
     def Net.handle_requests( channel, callback )
-      handle_requests_to(channel, callback, :pad_to_run_ch)
+      handle_requests_to(channel, callback, Nutella.app_id, Nutella.run_id)
     end
 
 
@@ -95,12 +95,18 @@ module Nutella
       return mh['type'], mh['from'], mh['payload'], mh['id']
     end
 
-    def Net.pad_to_run_ch( channel )
-      "/nutella/apps/#{Nutella.app_id}/runs/#{Nutella.run_id}/#{channel}"
+    def Net.pad_channel( channel, app_id, run_id )
+      raise 'If the run_id is specified, app_id needs to also be specified' if (!run_id.nil? && app_id.nil?)
+      return "/nutella/#{channel}" if (app_id.nil? && run_id.nil?)
+      return "/nutella/apps/#{app_id}/#{channel}" if (!app_id.nil? && run_id.nil?)
+      "/nutella/apps/#{app_id}/runs/#{run_id}/#{channel}"
     end
 
-    def Net.un_pad_run_ch( channel )
-      channel.gsub("/nutella/apps/#{Nutella.app_id}/runs/#{Nutella.run_id}/", '')
+    def Net.un_pad_channel( channel, app_id, run_id )
+      raise 'If the run_id is specified, app_id needs to also be specified' if (!run_id.nil? && app_id.nil?)
+      return channel.gsub('/nutella/', '') if (app_id.nil? && run_id.nil?)
+      return channel.gsub("/nutella/apps/#{app_id}/", '') if (!app_id.nil? && run_id.nil?)
+      channel.gsub("/nutella/apps/#{app_id}/runs/#{run_id}/", '')
     end
 
     def Net.assemble_from
@@ -139,8 +145,6 @@ module Nutella
     end
 
 
-
-
     # Subscribes to a channel or to a set of channels.
     #
     # @param [String] channel the channel or filter we are subscribing to. Can contain wildcard(s)
@@ -151,9 +155,9 @@ module Nutella
     #   - [Hash] from: the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
     # @param [Proc] padding_func channels padding function
     # @param [Proc] un_padding_func channels de-padding function
-    def Net.subscribe_to( channel, callback, padding_func, un_padding_func )
+    def Net.subscribe_to( channel, callback, app_id, run_id )
       # Pad channel
-      padded_channel = Net.send(padding_func, channel)
+      padded_channel = pad_channel(channel, app_id, run_id)
       # Maintain unique subscriptions
       raise 'You can`t subscribe twice to the same channel`' if @subscriptions.include? padded_channel
       # Depending on what type of channel we are subscribing to (wildcard or simple)
@@ -162,7 +166,7 @@ module Nutella
         mqtt_cb = lambda do |mqtt_message, mqtt_channel|
           begin
             type, from, payload, _ = extract_fields_from_message mqtt_message
-            callback.call(payload, Net.send(un_padding_func, mqtt_channel), from) if type=='publish'
+            callback.call(payload, un_pad_channel(mqtt_channel, app_id, run_id), from) if type=='publish'
           rescue JSON::ParserError
             # Make sure the message is JSON, if not drop the message
             return
@@ -196,9 +200,9 @@ module Nutella
     #
     # @param [String] channel we want to unsubscribe from. Can contain wildcard(s).
     # @param [Proc] padding_func channels padding function
-    def Net.unsubscribe_to( channel, padding_func )
+    def Net.unsubscribe_to( channel, app_id, run_id )
       # Pad channel
-      padded_channel = Net.send(padding_func, channel)
+      padded_channel = pad_channel(channel, app_id, run_id)
       idx = @subscriptions.index padded_channel
       # If we are not subscribed to this channel, return (no error is given)
       return if idx.nil?
@@ -217,11 +221,13 @@ module Nutella
     # @param [Object] message the message we are publishing. This can be,
     #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
     # @param [Proc] padding_func channels padding function
-    def Net.publish_to( channel, message=nil, padding_func )
+    def Net.publish_to( channel, message=nil, app_id, run_id )
+      # Pad channel
+      padded_channel = pad_channel(channel, app_id, run_id)
       # Throw exception if trying to publish something that is not JSON
       begin
         m = Net.prepare_message_for_publish message
-        Nutella.mqtt.publish( Net.send(padding_func, channel), m )
+        Nutella.mqtt.publish( padded_channel, m )
       rescue
         STDERR.puts 'Error: you are trying to publish something that is not JSON'
       end
@@ -234,9 +240,9 @@ module Nutella
     # @param [Object] message the body of request. This can be,
     #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
     # @param [Proc] padding_func channels padding function
-    def Net.sync_request_to( channel, message=nil, padding_func )
+    def Net.sync_request_to( channel, message=nil, app_id, run_id )
       # Pad channel
-      padded_channel = Net.send(padding_func, channel)
+      padded_channel = pad_channel(channel, app_id, run_id)
       # Prepare message
       m, id = prepare_message_for_request message
       # Initialize response
@@ -265,9 +271,9 @@ module Nutella
     # @param [Object] message the body of request. This can be,
     #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
     # @param [Proc] padding_func channels padding function
-    def Net.async_request_to( channel, message=nil, callback, padding_func )
+    def Net.async_request_to( channel, message=nil, callback, app_id, run_id )
       # Pad channel
-      padded_channel = Net.send(padding_func, channel)
+      padded_channel = pad_channel(channel, app_id, run_id)
       # Prepare message
       m, id = prepare_message_for_request message
       # Prepare callback
@@ -294,10 +300,10 @@ module Nutella
     #   - [Hash] the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
     #   - [*returns* Hash] The response sent back to the client that performed the request. Whatever is returned by the callback is marshaled into a JSON string and sent via MQTT.
     # @param [Proc] padding_func channels padding function
-    def Net.handle_requests_to( channel, callback, padding_func )
+    def Net.handle_requests_to( channel, callback, app_id, run_id )
       # Pad the channel
       # Pad channel
-      padded_channel = Net.send(padding_func, channel)
+      padded_channel = pad_channel(channel, app_id, run_id)
       mqtt_cb = lambda do |request|
         begin
           # Extract nutella fields
