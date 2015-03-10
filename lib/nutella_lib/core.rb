@@ -24,6 +24,9 @@ module Nutella
     @component_id = component_id
     @resource_id = nil
     @mqtt = SimpleMQTTClient.new broker_hostname
+    # Fetch the `run_id`s list for this application and subscribe to its updates
+    @app_runs_list = net.app.sync_request('app_runs_list')
+    net.app.subscribe('app_runs_list', lambda {|message, _| @app_runs_list = message })
   end
 
 
@@ -37,6 +40,8 @@ module Nutella
   def self.resource_id; @resource_id end
   # Accessors for mqtt client
   def self.mqtt; @mqtt end
+  # Accessor for runs list
+  def self.app_runs_list; @app_runs_list end
 
 
   # Provides access to the net module
