@@ -32,21 +32,32 @@ module Nutella
 
   # Accessors for app_id
   def self.app_id; @app_id end
+
   # Accessors for run_id
   def self.run_id; @run_id end
+
+  # Accessors for mqtt client
+  def self.mqtt;
+    raise 'Nutella has not been initialized: you need to call the proper init method before you can start using nutella' if @mqtt.nil?
+    @mqtt
+  end
+
   # Accessors for component_id
-  def self.component_id; @component_id end
+  def self.component_id;
+    raise 'Nutella has not been initialized: you need to call the proper init method before you can start using nutella' if @component_id.nil?
+    @component_id
+  end
+
   # Accessors for resource_id
   def self.resource_id; @resource_id end
-  # Accessors for mqtt client
-  def self.mqtt; @mqtt end
+
   # Accessor for runs list
   def self.app_runs_list; @app_runs_list end
 
-
-  # Provides access to the net module
+  # Accessor for the net module
   def self.net; Nutella::Net end
-  # Provides access to the persist module
+
+  # Accessor for the persist module
   def self.persist; Nutella::Persist end
 
 

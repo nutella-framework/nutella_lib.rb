@@ -4,11 +4,6 @@ module Nutella
     # This module implements the pub/sub and request/response APIs at the application level
     module App
 
-      # Store the subscriptions and the relative callbacks
-      @subscriptions = []
-      @callbacks = []
-
-
 
       # @!group Application-level communication APIs
 
