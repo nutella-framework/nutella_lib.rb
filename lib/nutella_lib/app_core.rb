@@ -12,8 +12,8 @@ module Nutella
       Nutella.resource_id = nil
       Nutella.mqtt = SimpleMQTTClient.new broker_hostname
       # Fetch the `run_id`s list for this application and subscribe to its updates
-      # @app_runs_list = net.sync_request('app_runs_list')
-      # self.net.subscribe('app_runs_list', lambda {|message, _| Nutella.app.app_runs_list = message })
+      @app_runs_list = net.sync_request('app_runs_list')
+      self.net.subscribe('app_runs_list', lambda {|message, _| Nutella.app.app_runs_list = message })
     end
 
     # Setter/getter for runs_list
