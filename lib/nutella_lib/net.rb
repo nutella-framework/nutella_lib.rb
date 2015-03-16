@@ -244,6 +244,7 @@ module Nutella
         Nutella.mqtt.publish( padded_channel, m )
       rescue
         STDERR.puts 'Error: you are trying to publish something that is not JSON'
+        STDERR.puts $!
       end
     end
 

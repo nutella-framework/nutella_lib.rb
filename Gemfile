@@ -1,6 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'mqtt', '~> 0.3', '>= 0.3'
+gem 'ansi', '~> 1.5', '>= 1.4'
 
 group :development do
   gem 'shoulda', '~> 3', '>= 3'

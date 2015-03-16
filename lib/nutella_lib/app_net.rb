@@ -199,7 +199,7 @@ module Nutella
       # @param [Object] message the message we are publishing. This can be,
       #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
       def self.publish_to_all_runs( channel, message )
-        Nutella.app_runs_list.each do |run_id|
+        Nutella.app.app_runs_list.each do |run_id|
           Nutella::Net.publish_to(channel, message, Nutella.app_id, run_id)
         end
       end
@@ -212,7 +212,7 @@ module Nutella
       #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
       # @param [Proc] callback the callback that is fired whenever a response is received. It takes one parameter (response).
       def self.async_request_to_all_runs(channel, request, callback)
-        Nutella.app_runs_list.each do |run_id|
+        Nutella.app.app_runs_list.each do |run_id|
           Nutella::Net.async_request_to(channel, request, callback, Nutella.app_id, run_id)
         end
       end

@@ -16,7 +16,6 @@ module Nutella
 
 
   # Variables accessors
-  def self.app_runs_list; @app_runs_list end
   def self.app_id; @app_id end
   def self.run_id; @run_id end
   def self.resource_id; @resource_id end
@@ -30,7 +29,6 @@ module Nutella
   end
 
   # Variables Setters
-  def self.app_runs_list=(val) @app_runs_list=val; end
   def self.app_id=(val); @app_id=val; end
   def self.run_id=(val); @run_id=val; end
   def self.resource_id=(val); @resource_id=val; end
@@ -39,9 +37,10 @@ module Nutella
 
 
   # Accessors for sub-modules
-  def self.app; Nutella::App end
-  def self.net; Nutella::Net end
-  def self.persist; Nutella::Persist end
+  def self.app; Nutella::App; end
+  def self.net; Nutella::Net; end
+  def self.log; Nutella::Log; end
+  def self.persist; Nutella::Persist; end
 
 
   # Utility functions
