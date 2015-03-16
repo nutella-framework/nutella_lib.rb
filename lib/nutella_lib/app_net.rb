@@ -1,8 +1,9 @@
 module Nutella
-  module Net
+
+  module App
 
     # This module implements the pub/sub and request/response APIs at the application level
-    module App
+    module Net
 
 
       # @!group Application-level communication APIs
@@ -15,7 +16,7 @@ module Nutella
       #   - [String] message: the received message. Messages that are not JSON are discarded.
       #   - [String] channel: the application-level channel the message was received on (optional, only for wildcard subscriptions)
       #   - [Hash] from: the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
-      def App.subscribe (channel, callback)
+      def self.subscribe (channel, callback)
         Nutella::Net.subscribe_to(channel, callback, Nutella.app_id, nil)
       end
 
@@ -23,7 +24,7 @@ module Nutella
       # Un-subscribes from an application-level channel
       #
       # @param [String] channel the application level channel we want to unsubscribe from. Can contain wildcard(s).
-      def App.unsubscribe( channel )
+      def self.unsubscribe( channel )
         Nutella::Net.unsubscribe_to(channel, Nutella.app_id, nil)
       end
 
@@ -33,7 +34,7 @@ module Nutella
       # @param [String] channel the application-level channel we want to publish the message to. *CANNOT* contain wildcard(s)!
       # @param [Object] message the message we are publishing. This can be,
       #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
-      def App.publish(channel, message=nil)
+      def self.publish(channel, message=nil)
         Nutella::Net.publish_to(channel, message, Nutella.app_id, nil)
       end
 
@@ -43,7 +44,7 @@ module Nutella
       # @param [String] channel the application-level channel we want to make the request to. *CANNOT* contain wildcard(s)!
       # @param [Object] message the body of request. This can be,
       #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
-      def App.sync_request ( channel, message=nil )
+      def self.sync_request ( channel, message=nil )
         Nutella::Net.sync_request_to(channel, message, Nutella.app_id, nil)
       end
 
@@ -54,7 +55,7 @@ module Nutella
       # @param [Object] message the body of request. This can be,
       #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
       # @param [Proc] callback the callback that is fired whenever a response is received. It takes one parameter (response).
-      def App.async_request ( channel, message=nil, callback )
+      def self.async_request ( channel, message=nil, callback )
         Nutella::Net.async_request_to(channel, message, callback, Nutella.app_id, nil)
       end
 
@@ -67,7 +68,7 @@ module Nutella
       #   - [String] the received message (payload). Messages that are not JSON are discarded.
       #   - [Hash] the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
       #   - [*returns* Hash] The response sent back to the client that performed the request. Whatever is returned by the callback is marshaled into a JSON string and sent via MQTT.
-      def App.handle_requests( channel, callback )
+      def self.handle_requests( channel, callback )
         Nutella::Net.handle_requests_on(channel, callback, Nutella.app_id, nil)
       end
 
@@ -85,7 +86,7 @@ module Nutella
       #   - [String] message: the received message. Messages that are not JSON are discarded.
       #   - [String] channel: the application-level channel the message was received on (optional, only for wildcard subscriptions)
       #   - [Hash] from: the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
-      def App.subscribe_to_run( run_id, channel, callback )
+      def self.subscribe_to_run( run_id, channel, callback )
         Nutella::Net.subscribe_to(channel, callback, Nutella.app_id, run_id)
       end
 
@@ -94,7 +95,7 @@ module Nutella
       #
       # @param [String] run_id the specific run we are un-subscribing from
       # @param [String] channel the run-level channel we want to unsubscribe from. Can contain wildcard(s).
-      def App.unsubscribe_to_run( run_id, channel )
+      def self.unsubscribe_to_run( run_id, channel )
         Nutella::Net.unsubscribe_to(channel, Nutella.app_id, run_id)
       end
 
@@ -105,7 +106,7 @@ module Nutella
       # @param [String] channel the run-level channel we want to publish the message to. *CANNOT* contain wildcard(s)!
       # @param [String] message the message we are publishing. This can be,
       #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
-      def App.publish_to_run( run_id, channel, message )
+      def self.publish_to_run( run_id, channel, message )
         Nutella::Net.publish_to(channel, message, Nutella.app_id, run_id)
       end
 
@@ -116,7 +117,7 @@ module Nutella
       # @param [String] channel the channel we want to make the request to. *CANNOT* contain wildcard(s)!
       # @param [Object] request the body of request. This can be,
       #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
-      def App.sync_request_to_run( run_id, channel, request)
+      def self.sync_request_to_run( run_id, channel, request)
         Nutella::Net.sync_request_to(channel, request, Nutella.app_id, run_id)
       end
 
@@ -128,7 +129,7 @@ module Nutella
       # @param [Object] request the body of request. This can be,
       #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
       # @param [Proc] callback the callback that is fired whenever a response is received. It takes one parameter (response).
-      def App.async_request_to_run( run_id, channel, request, callback)
+      def self.async_request_to_run( run_id, channel, request, callback)
         Nutella::Net.async_request_to(channel, request, callback, Nutella.app_id, run_id)
       end
 
@@ -142,7 +143,7 @@ module Nutella
       #   - [String] the received message (payload). Messages that are not JSON are discarded.
       #   - [Hash] the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
       #   - [*returns* Hash] The response sent back to the client that performed the request. Whatever is returned by the callback is marshaled into a JSON string and sent via MQTT.
-      def App.handle_requests_on_run( run_id, channel, callback )
+      def self.handle_requests_on_run( run_id, channel, callback )
         Nutella::Net.handle_requests_on(channel, callback, Nutella.app_id, run_id)
       end
 
@@ -159,7 +160,7 @@ module Nutella
       #   - [String] message: the received message. Messages that are not JSON are discarded.
       #   - [String] run_id: the run_id of the channel the message was sent on
       #   - [Hash] from: the sender's identifiers (run_id, app_id, component_id and optionally resource_id)
-      def App.subscribe_to_all_runs( channel, callback )
+      def self.subscribe_to_all_runs( channel, callback )
         # Check the passed callback has the right number of arguments
         raise 'You need to pass a callback with 3 parameters (payload, run_id, from) when subscribing to all runs!' if callback.parameters.length!=3
         # Pad channel
@@ -187,7 +188,7 @@ module Nutella
       # Allows application-level APIs to unsubscribe from a run-level channel *for ALL runs*
       #
       # @param [String] channel the run-level channel we want to unsubscribe from. Can contain wildcard(s).
-      def App.unsubscribe_from_all_runs( channel )
+      def self.unsubscribe_from_all_runs( channel )
         Nutella::Net.unsubscribe_to(channel, Nutella.app_id, '+')
       end
 
@@ -197,7 +198,7 @@ module Nutella
       # @param [String] channel the run-level channel we want to publish the message to. *CANNOT* contain wildcard(s)!
       # @param [Object] message the message we are publishing. This can be,
       #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
-      def App.publish_to_all_runs( channel, message )
+      def self.publish_to_all_runs( channel, message )
         Nutella.app_runs_list.each do |run_id|
           Nutella::Net.publish_to(channel, message, Nutella.app_id, run_id)
         end
@@ -210,7 +211,7 @@ module Nutella
       # @param [Object] request the body of request. This can be,
       #   nil/empty (default), a string, a hash and, in general, anything with a .to_json method.
       # @param [Proc] callback the callback that is fired whenever a response is received. It takes one parameter (response).
-      def App.async_request_to_all_runs(channel, request, callback)
+      def self.async_request_to_all_runs(channel, request, callback)
         Nutella.app_runs_list.each do |run_id|
           Nutella::Net.async_request_to(channel, request, callback, Nutella.app_id, run_id)
         end
@@ -226,7 +227,7 @@ module Nutella
       #   - [String] run_id: the run_id of the channel the message was sent on
       #   - [Hash] the sender's identifiers (from containing, run_id, app_id, component_id and optionally resource_id)
       #   - [*returns* Hash] The response sent back to the client that performed the request. Whatever is returned by the callback is marshaled into a JSON string and sent via MQTT.
-      def App.handle_requests_on_all_runs(channel, callback)
+      def self.handle_requests_on_all_runs(channel, callback)
         # Check the passed callback has the right number of arguments
         raise 'You need to pass a callback with 3 parameters (request, run_id, from) when handling requests!' if callback.parameters.length!=3
         # Pad channel
@@ -259,7 +260,7 @@ module Nutella
 
       private
 
-      def App.extract_run_id_from_ch( app_id, mqtt_channel )
+      def self.extract_run_id_from_ch( app_id, mqtt_channel )
         head = "/nutella/apps/#{app_id}/runs/"
         mqtt_channel.gsub(head, '').split('/')[0]
       end
@@ -268,4 +269,5 @@ module Nutella
     end
 
   end
+
 end
