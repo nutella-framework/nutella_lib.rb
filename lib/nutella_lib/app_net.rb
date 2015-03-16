@@ -258,6 +258,18 @@ module Nutella
       # @!endgroup
 
 
+      # Listens for incoming messages. All this function
+      # does is to put the thread to sleep and wait for something to
+      # happen over the network to wake up.
+      def self.listen
+        begin
+          sleep
+        rescue Interrupt
+          # Simply returns once interrupted
+        end
+      end
+
+
       private
 
       def self.extract_run_id_from_ch( app_id, mqtt_channel )

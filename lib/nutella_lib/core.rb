@@ -29,6 +29,14 @@ module Nutella
     @mqtt
   end
 
+  # Variables Setters
+  def self.app_runs_list=(val) @app_runs_list=val; end
+  def self.app_id=(val); @app_id=val; end
+  def self.run_id=(val); @run_id=val; end
+  def self.resource_id=(val); @resource_id=val; end
+  def self.component_id=(val); @component_id=val; end
+  def self.mqtt=(val); @mqtt=val; end
+
 
   # Accessors for sub-modules
   def self.app; Nutella::App end
