@@ -11,6 +11,7 @@ module Nutella
     @run_id = run_id
     @component_id = component_id
     @resource_id = nil
+    @mongo_host = broker_hostname
     @mqtt = SimpleMQTTClient.new broker_hostname
   end
 
@@ -22,6 +23,10 @@ module Nutella
   def self.component_id;
     raise 'Nutella has not been initialized: you need to call the proper init method before you can start using nutella' if @component_id.nil?
     @component_id
+  end
+  def self.mongo_host
+    raise 'Nutella has not been initialized: you need to call the proper init method before you can start using nutella' if @mongo_host.nil?
+    @mongo_host
   end
   def self.mqtt;
     raise 'Nutella has not been initialized: you need to call the proper init method before you can start using nutella' if @mqtt.nil?

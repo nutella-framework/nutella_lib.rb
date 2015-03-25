@@ -31,7 +31,7 @@ class MongoPersistedCollection
   # @param [Hash] item the object we want to delete
   # @return [Hash] the object we just deleted
   def delete( item )
-    fromBSONtoHash @collection.find(item).find_one_and_delete
+    from_bson_to_hash @collection.find(item).find_one_and_delete
   end
 
 
@@ -52,14 +52,14 @@ class MongoPersistedCollection
   def to_a
     ta = Array.new
     @collection.find.each do |doc|
-      ta.push fromBSONtoHash(doc)
+      ta.push from_bson_to_hash(doc)
     end
     ta
   end
 
   # Returns the length of the collection
   #
-  # @return [Fixnum] the lenght of the collection
+  # @return [Fixnum] the length of the collection
   def length
     @collection.find.count.to_i
   end
@@ -67,7 +67,7 @@ class MongoPersistedCollection
   private
 
 
-  def fromBSONtoHash( item )
+  def from_bson_to_hash( item )
     h = item.to_h
     h.delete '_id'
     h

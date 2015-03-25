@@ -1,7 +1,6 @@
 require 'json'
 require 'pstore'
 require 'fileutils'
-require 'thread'
 
 # JSONStore provides the same functionality as PStore, except it uses JSON
 # to dump objects instead of Marshal.
@@ -33,10 +32,6 @@ class JSONStore < PStore
   # hash = store.transaction { store.to_h }
   def to_h
     @table
-  end
-
-  def merge!( hash )
-    @table.merge!(hash)
   end
 
 
