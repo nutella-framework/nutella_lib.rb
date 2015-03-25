@@ -11,6 +11,7 @@ require 'nutella_lib/persist'
 require 'nutella_lib/app_core'
 require 'nutella_lib/app_net'
 require 'nutella_lib/app_log'
+require 'nutella_lib/app_persist'
 
 # NO_EXT gets defined when you require "nutella_lib/noext", which
 # signals that you don't want any extensions.

@@ -99,6 +99,4 @@ class TestNutellaNetApp < MiniTest::Test
   #   sleep 2
   # end
 
-  # TODO do more tests for app to run APIs and broadcasting
-
 end

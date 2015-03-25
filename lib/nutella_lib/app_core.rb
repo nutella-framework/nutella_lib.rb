@@ -12,17 +12,21 @@ module Nutella
       Nutella.resource_id = nil
       Nutella.mqtt = SimpleMQTTClient.new broker_hostname
       # Fetch the `run_id`s list for this application and subscribe to its updates
-      @app_runs_list = net.sync_request('app_runs_list')
+      net.async_request('app_runs_list', lambda { |res| Nutella.app.app_runs_list = res })
       self.net.subscribe('app_runs_list', lambda {|message, _| Nutella.app.app_runs_list = message })
     end
 
     # Setter/getter for runs_list
     def self.app_runs_list=(val) @app_runs_list=val; end
-    def self.app_runs_list; @app_runs_list end
+    def self.app_runs_list
+      raise 'Nutella has not been initialized: you need to call the proper init method before you can start using nutella' if @app_runs_list.nil?
+      @app_runs_list
+    end
 
     # Accessors for sub-modules
     def self.net; Nutella::App::Net; end
     def self.log; Nutella::App::Log; end
+    def self.persist; Nutella::App::Persist; end
 
 
     # Parse command line arguments for app level components
