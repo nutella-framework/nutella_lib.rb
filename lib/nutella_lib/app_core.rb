@@ -10,6 +10,7 @@ module Nutella
       Nutella.run_id = nil
       Nutella.component_id = component_id
       Nutella.resource_id = nil
+      Nutella.mongo_host = broker_hostname
       Nutella.mqtt = SimpleMQTTClient.new broker_hostname
       # Fetch the `run_id`s list for this application and subscribe to its updates
       net.async_request('app_runs_list', lambda { |res| Nutella.app.app_runs_list = res })

@@ -38,6 +38,7 @@ module Nutella
   def self.run_id=(val); @run_id=val; end
   def self.resource_id=(val); @resource_id=val; end
   def self.component_id=(val); @component_id=val; end
+  def self.mongo_host=(val); @mongo_host=val; end
   def self.mqtt=(val); @mqtt=val; end
 
 
