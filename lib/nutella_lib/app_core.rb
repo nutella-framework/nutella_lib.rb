@@ -12,6 +12,8 @@ module Nutella
       Nutella.resource_id = nil
       Nutella.mongo_host = broker_hostname
       Nutella.mqtt = SimpleMQTTClient.new broker_hostname
+      # Start pinging
+      Nutella.net.start_pinging
       # Fetch the `run_id`s list for this application and subscribe to its updates
       net.async_request('app_runs_list', lambda { |res| Nutella.app.app_runs_list = res })
       self.net.subscribe('app_runs_list', lambda {|message, _| Nutella.app.app_runs_list = message })

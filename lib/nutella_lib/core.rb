@@ -13,6 +13,8 @@ module Nutella
     @resource_id = nil
     @mongo_host = broker_hostname
     @mqtt = SimpleMQTTClient.new broker_hostname
+    # Start pinging
+    Nutella.net.start_pinging
   end
 
 
@@ -20,6 +22,7 @@ module Nutella
   def self.app_id; @app_id end
   def self.run_id; @run_id end
   def self.resource_id; @resource_id end
+  def self.ping_thread; @ping_thread end
   def self.component_id;
     raise 'Nutella has not been initialized: you need to call the proper init method before you can start using nutella' if @component_id.nil?
     @component_id
@@ -40,6 +43,7 @@ module Nutella
   def self.component_id=(val); @component_id=val; end
   def self.mongo_host=(val); @mongo_host=val; end
   def self.mqtt=(val); @mqtt=val; end
+  def self.ping_thread=(val); @ping_thread=val; end
 
 
   # Accessors for sub-modules

@@ -80,15 +80,18 @@ module Nutella
     end
 
 
-    # Listens for incoming messages. All this function
-    # does is to put the thread to sleep and wait for something to
-    # happen over the network to wake up.
-    def self.listen
-      begin
-        sleep
-      rescue Interrupt
-        # Simply returns once interrupted
+    # Sends a ping every 5 seconds to pings channel of
+    # the proper level
+    #
+    def self.start_pinging
+      Nutella.ping_thread = Thread.new do
+        loop do
+          publish_to('pings', 'ping', Nutella.app_id, Nutella.run_id)
+          sleep(5)
+        end
       end
+      Signal.trap('INT') { exit }
+      Nutella.ping_thread.join
     end
 
 
