@@ -209,6 +209,8 @@ module Nutella
       @subscriptions.push padded_channel
       @callbacks.push mqtt_cb
       Nutella.mqtt.subscribe( padded_channel, mqtt_cb )
+      # Notify subscriptions bot
+      publish_to('subscriptions', {'channel' => padded_channel}, app_id, run_id)
     end
 
 
