@@ -10,16 +10,6 @@ module Nutella
   # Implements basic run-dependent persistence for run-level components
   module Persist
 
-    # This method returns a JSONStore (file based persistence)
-    # def self.get_json_store(file_name)
-    #   dir = file_name[0..file_name.rindex('/')]
-    #   file = file_name[file_name.rindex('/')..file_name.length-1]
-    #   new_dir = dir + Nutella.run_id
-    #   FileUtils.mkdir_p new_dir
-    #   JSONStore.new(new_dir + file, true)
-    # end
-
-
     # This method returns a MongoDB-backed store (i.e. persistence)
     # for a collection (i.e. an Array)
     # @param [String] name the name of the store
