@@ -117,12 +117,16 @@ module Nutella
     def self.assemble_from
       from = Hash.new
       if Nutella.run_id.nil?
-        from['type'] = 'app'
+        if Nutella.app_id.nil?
+          from['type'] = 'framework'
+        else
+          from['type'] = 'app'
+          from['app_id'] = Nutella.app_id
+        end
       else
         from['type'] = 'run'
         from['run_id'] = Nutella.run_id
       end
-      from['app_id'] = Nutella.app_id
       from['component_id'] = Nutella.component_id
       from['resource_id'] = Nutella.resource_id unless Nutella.resource_id.nil?
       from
