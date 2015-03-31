@@ -90,8 +90,18 @@ module Nutella
           sleep(5)
         end
       end
-      Signal.trap('INT') { exit }
-      Nutella.ping_thread.join
+    end
+
+
+    # Listens for incoming messages. All this function
+    # does is to put the thread to sleep and wait for something to
+    # happen over the network to wake up.
+    def self.listen
+      begin
+        sleep
+      rescue Interrupt
+        # Simply returns once interrupted
+      end
     end
 
 

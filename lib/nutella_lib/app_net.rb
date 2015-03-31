@@ -264,11 +264,7 @@ module Nutella
       # does is to put the thread to sleep and wait for something to
       # happen over the network to wake up.
       def self.listen
-        begin
-          sleep
-        rescue Interrupt
-          # Simply returns once interrupted
-        end
+        Nutella::Net.listen
       end
 
 
