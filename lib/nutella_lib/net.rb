@@ -199,7 +199,7 @@ module Nutella
           rescue JSON::ParserError
             # Make sure the message is JSON, if not drop the message
             return
-          rescue
+          rescue ArgumentError
             # Check the passed callback has the right number of arguments
             STDERR.puts "The callback you passed to subscribe has the #{$!}: it needs 'payload', 'channel' and 'from'"
           end
@@ -212,7 +212,7 @@ module Nutella
           rescue JSON::ParserError
             # Make sure the message is JSON, if not drop the message
             return
-          rescue
+          rescue ArgumentError
             # Check the passed callback has the right number of arguments
             STDERR.puts "The callback you passed to subscribe has the #{$!}: it needs 'payload' and 'from'"
           end
@@ -357,7 +357,7 @@ module Nutella
         rescue JSON::ParserError
           # Make sure that request contains JSON, if not drop the message
           return
-        rescue
+        rescue ArgumentError
           # Check that the passed callback has the right number of arguments
           STDERR.puts "The callback you passed to subscribe has the #{$!}: it needs 'payload' and 'from'"
         end
