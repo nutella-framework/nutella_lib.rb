@@ -182,8 +182,8 @@ module Nutella
         Nutella::Net.subscriptions.push padded_channel
         Nutella::Net.callbacks.push mqtt_cb
         Nutella.mqtt.subscribe( padded_channel, mqtt_cb )
-        # Notify subscriptions bot
-        Nutella::Net.publish_to('subscriptions', {'channel' => padded_channel}, Nutella.app_id, nil)
+        # Notify subscription
+        Nutella::Net.publish_to('subscriptions', {'type' => 'subscribe', 'channel' => padded_channel}, Nutella.app_id, nil)
       end
 
 
@@ -254,6 +254,8 @@ module Nutella
         end
         # Subscribe to the channel
         Nutella.mqtt.subscribe( padded_channel, mqtt_cb )
+        # Notify subscription
+        Nutella::Net.publish_to('handle_requests', {'type' => 'subscribe', 'channel' => padded_channel}, Nutella.app_id, nil)
       end
 
 
