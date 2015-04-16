@@ -18,3 +18,6 @@ require 'nutella_lib/app_persist'
 unless defined?(Nutella::NO_EXT)
   require 'nutella_lib/ext/kernel'
 end
+
+# Make sure any exception in any thread kills the program
+Thread::abort_on_exception = true
