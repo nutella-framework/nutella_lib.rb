@@ -5,7 +5,7 @@
 nutella library for Ruby. Used mostly to create bots in Ruby.
 
 # Getting started
-Take a look at [basic-ruby-bot](https://github.com/nutella-framework/basic-ruby-bot) to see how to use nutella_lib insideto build a bot. 
+Take a look at [basic-ruby-bot](https://github.com/nutella-framework/basic-ruby-bot) to see how to use nutella_lib to build a bot. 
 
 # Docs
 Check out the docs at [http://www.rubydoc.info/gems/nutella_lib](http://www.rubydoc.info/gems/nutella_lib)

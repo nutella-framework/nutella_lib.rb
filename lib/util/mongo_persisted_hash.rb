@@ -1,5 +1,4 @@
 require 'mongo'
-require 'pstore'
 
 # An hash that is automatically persisted to a MongoDB document.
 # This class behaves *similarly* to a regular Hash but it persists every operation
@@ -62,7 +61,9 @@ class MongoPersistedHash
   end
 
   def to_h
-    load_hash
+    hash = load_hash
+    hash.delete '_id'
+    hash
   end
 
   def keys
