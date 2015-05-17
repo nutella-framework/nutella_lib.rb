@@ -123,7 +123,9 @@ class SimpleMQTTClient
     # First we need to build a regex out of the pattern
     regex = build_regex_from_pattern pattern
     # Then we check if the regex matches the string
-    !!(regex =~ str)
+    match_data = regex.match str
+    # and if the matched data is actually the whole string (avoid errors with channels with the same prefix)
+    !match_data.nil? && match_data[0] == str
   end
 
   # Escape '/'
