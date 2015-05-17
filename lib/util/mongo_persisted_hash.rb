@@ -43,6 +43,7 @@ class MongoPersistedHash
 
   def empty?
     hash = load_hash
+    hash.delete '_id'
     hash.empty?
   end
 
@@ -57,6 +58,7 @@ class MongoPersistedHash
 
   def to_s
     hash = load_hash
+    hash.delete '_id'
     hash.to_s
   end
 
@@ -68,11 +70,13 @@ class MongoPersistedHash
 
   def keys
     hash = load_hash
+    hash.delete '_id'
     hash.keys
   end
 
   def length
     hash = load_hash
+    hash.delete '_id'
     hash.length
   end
 
