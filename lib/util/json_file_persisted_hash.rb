@@ -53,6 +53,10 @@ class JSONFilePersistedHash
     @store.transaction { @store.to_h.length }
   end
 
+  def merge!( other_hash )
+    @store.transaction { other_hash.each { |k, v| @store[k] = v } }
+  end
+
 
   # PersistedHash-only public methods
 
