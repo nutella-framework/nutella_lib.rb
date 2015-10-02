@@ -110,13 +110,16 @@ class MongoPersistedHash
   # private
 
   def load_hash
-    r = @collection.find({_id: @doc_id}).limit(1).first
-    r.nil? ? {'_id' => @doc_id} : r
+    if(!defined? @r)
+      @r = @collection.find({_id: @doc_id}).limit(1).first
+    end
+    @r.nil? ? {'_id' => @doc_id} : @r
   end
 
 
   def store_hash(hash)
     @collection.find({'_id' => @doc_id}).find_one_and_replace(hash, :upsert => :true)
+    @r = hash
   end
 
 
