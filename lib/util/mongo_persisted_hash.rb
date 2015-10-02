@@ -127,7 +127,10 @@ class MongoPersistedHash
         @r = @collection.find({_id: @doc_id}).limit(1).first
       }
     end
-    @r.nil? ? {'_id' => @doc_id} : @r
+    if(@r.nil?)
+        @r = {'_id' => @doc_id};
+    end
+    @r
   end
 
 
