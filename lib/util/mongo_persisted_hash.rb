@@ -134,7 +134,7 @@ class MongoPersistedHash
   def store_hash(hash)
     @s.synchronize {
       @r = hash
-      if(@auto_save)
+      if(@auto_save and !@r.empty?)
         @collection.find({'_id' => @doc_id}).find_one_and_replace(@r, :upsert => :true)
       end
     }
@@ -142,7 +142,9 @@ class MongoPersistedHash
 
   def save
     @s.synchronize {
-      @collection.find({'_id' => @doc_id}).find_one_and_replace(@r, :upsert => :true)
+      if(defined? @r and !@r.empty?)
+        @collection.find({'_id' => @doc_id}).find_one_and_replace(@r, :upsert => :true)
+      end
     }
   end
 
