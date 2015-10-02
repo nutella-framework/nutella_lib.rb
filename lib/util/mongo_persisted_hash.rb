@@ -18,6 +18,18 @@ class MongoPersistedHash
     client = Mongo::Client.new([hostname], :database => db)
     @collection = client[collection]
     @doc_id = name
+
+    # Semaphore for the write on DB synchronization
+    @s = Mutex.new
+
+    # Enable / disable auto save
+    @auto_save = true;
+
+  end
+
+  # Enable/disable auto save
+  def set_auto_save(as)
+    @auto_save = as
   end
 
 
@@ -111,15 +123,27 @@ class MongoPersistedHash
 
   def load_hash
     if(!defined? @r)
-      @r = @collection.find({_id: @doc_id}).limit(1).first
+      @s.synchronize {
+        @r = @collection.find({_id: @doc_id}).limit(1).first
+      }
     end
     @r.nil? ? {'_id' => @doc_id} : @r
   end
 
 
   def store_hash(hash)
-    @collection.find({'_id' => @doc_id}).find_one_and_replace(hash, :upsert => :true)
-    @r = hash
+    @s.synchronize {
+      @r = hash
+      if(@auto_save)
+        @collection.find({'_id' => @doc_id}).find_one_and_replace(@r, :upsert => :true)
+      end
+    }
+  end
+
+  def save
+    @s.synchronize {
+      @collection.find({'_id' => @doc_id}).find_one_and_replace(@r, :upsert => :true)
+    }
   end
 
 
