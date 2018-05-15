@@ -242,7 +242,7 @@ module Nutella
             # Only handle requests that have proper id set
             return if type!='request' || id.nil?
             # Execute callback and send response
-            m = Net.prepare_message_for_response( callback.call( payload, run_id, from), id )
+            m = Nutella::Net.prepare_message_for_response( callback.call( payload, run_id, from), id )
             Nutella.mqtt.publish( mqtt_channel, m )
           rescue JSON::ParserError
             # Make sure that request contains JSON, if not drop the message
