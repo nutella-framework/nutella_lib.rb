@@ -14,7 +14,7 @@ class SimpleMQTTClient
   #  @param [String] client_id the **unique** client identifier
   def initialize( host, client_id=nil )
     @channels = Hash.new
-    @client = client_id.nil? ? MQTT::Client.connect(:host => host) : MQTT::Client.connect(host: host, client_id: client_id)
+    @client = client_id.nil? ? MQTT::Client.connect(host: host) : MQTT::Client.connect(host: host, client_id: client_id)
     @thread = Thread.new('mqtt') do
       @client.get do |channel, message|
         # Execute all the appropriate callbacks:
@@ -129,7 +129,7 @@ class SimpleMQTTClient
   end
 
   # Escape '/'
-  # Substitute '+' for '[^"\/"]+' (a string of one or more characters that is are not '/')
+  # Substitute '+' for '[^"\/"]+' (a string of one or more characters that are not '/')
   # Substitute '/#' with '.*' (a string of zero or more characters)
   # Substitute '#' for '.*' (a string of zero or more characters)
   def build_regex_from_pattern( pattern )
