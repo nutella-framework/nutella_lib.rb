@@ -2,11 +2,19 @@
 [![Build Status](https://travis-ci.org/nutella-framework/nutella_lib.rb.svg)](https://travis-ci.org/nutella-framework/nutella_lib.rb)
 
 # nutella_lib.rb
-nutella library for Ruby. Used mostly to create bots in Ruby.
+nutella library for Ruby. Used to create nutella bots in Ruby.
 
-# Getting started
+## Getting started
 Take a look at [basic-ruby-bot](https://github.com/nutella-framework/basic-ruby-bot) to see how to use nutella_lib to build a bot. 
 
-# Docs
+## Docs
 Check out the docs at [http://www.rubydoc.info/gems/nutella_lib](http://www.rubydoc.info/gems/nutella_lib)
+
+# Contributing
+1. Clone repo
+1. Bundle (`bundle install`)
+1. Run tests (`rake test`)
+1. Make changes
+1. Run tests (`rake test`)
+1. Open a PR
 
