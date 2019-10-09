@@ -6,7 +6,7 @@ doc/
 .yardoc
 .bundle
 Gemfile.lock
-spec/example.txt
+spec/examples.txt
 
 # Mac crap
 .DS_Store
