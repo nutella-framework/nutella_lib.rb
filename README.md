@@ -17,4 +17,3 @@ Check out the docs at [http://www.rubydoc.info/gems/nutella_lib](http://www.ruby
 1. Make changes
 1. Run tests (`rake test`)
 1. Open a PR
-

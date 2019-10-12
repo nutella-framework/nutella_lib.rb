@@ -1,9 +1,10 @@
 module Nutella
-
+  #  App-level APIs sub-module
   module App
 
     # Initializes this component as an application component
     # @param [String] broker_hostname
+    # @param [String] app_id
     # @param [String] component_id
     def self.init( broker_hostname, app_id, component_id )
       Nutella.app_id = app_id
@@ -12,6 +13,7 @@ module Nutella
       Nutella.resource_id = nil
       Nutella.mongo_host = broker_hostname
       Nutella.mqtt = SimpleMQTTClient.new broker_hostname
+      
       # Start pinging
       Nutella.net.start_pinging
       # Fetch the `run_id`s list for this application and subscribe to its updates

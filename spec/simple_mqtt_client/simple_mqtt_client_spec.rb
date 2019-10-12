@@ -2,8 +2,43 @@ require 'spec_helper'
 require 'simple_mqtt_client/simple_mqtt_client'
 
 describe SimpleMQTTClient do
+    
+    describe '#initialize' do
+        context 'with a non existing broker' do
+            it 'raises and error' do
+                expect { SimpleMQTTClient.new('localhost') }.to raise_error(Errno::ECONNREFUSED)
+            end
+        end
+    end
+
+    describe '#subscribe' do
+        before(:each) do
+            mqtt_client = instance_double('MQTT::Client')
+            MQTT::Client.stub(:connect).and_return(mqtt_client)
+        end
+
+        context 'to params are passed correctly' do
+            let(:client) { SimpleMQTTClient.new('localhost') }
+        end
+    end
+
+    describe '#unsubscribe' do
+    end
+
+    describe '#publish' do
+    end
+
+    describe '#subscriptions' do
+    end
 end
 
+# server = double('server').as_null_object
+# TCPSocket.stub(:new).and_return(server)
+
+
+# @obj = MyClass.new
+# result = @obj.send(:my_private_method, arguments)
+# expect(....)
 
   # def test_connect_and_send_receive_messages_correctly
   #   cb_executed = false

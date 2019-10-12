@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'mqtt', '~> 0.5', '>= 0.5'
-gem 'ansi', '~> 1.5', '>= 1.5' ## Why??? This needs to go!!
+gem 'ansi', '~> 1.5', '>= 1.5'
 gem 'mongo','~> 2.0'
 
 group :development do

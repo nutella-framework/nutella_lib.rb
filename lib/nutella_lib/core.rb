@@ -1,10 +1,10 @@
 # This module is the wrapper around the whole nutella library.
 module Nutella
 
-
   # Initializes this component as a run component
-  # @param [String] run_id
   # @param [String] broker_hostname
+  # @param [String] app_id
+  # @param [String] run_id
   # @param [String] component_id
   def self.init( broker_hostname, app_id, run_id, component_id )
     @app_id = app_id
@@ -16,7 +16,6 @@ module Nutella
     # Start pinging
     Nutella.net.start_pinging
   end
-
 
   # Variables accessors
   def self.app_id; @app_id end
@@ -45,16 +44,16 @@ module Nutella
   def self.mqtt=(val); @mqtt=val; end
   def self.ping_thread=(val); @ping_thread=val; end
 
-
-  # Accessors for sub-modules
+  # Accessors for app and framework sub-modules
   def self.app; Nutella::App; end
+  def self.f;   Nutella::Framework; end
+  # Accessors run-level sub-modules
   def self.net; Nutella::Net; end
   def self.log; Nutella::Log; end
   def self.persist; Nutella::Persist; end
 
 
-  # Utility functions
-
+  # Utility methods
 
   # Parse command line arguments for run level components
   #
@@ -86,7 +85,3 @@ module Nutella
   end
 
 end
-
-
-
-
