@@ -1,7 +1,44 @@
-require 'helper'
+require 'spec_helper'
+require 'simple_mqtt_client/simple_mqtt_client'
 
-class TestSimpleRubyMqttClient < MiniTest::Test
+describe SimpleMQTTClient do
+    
+    describe '#initialize' do
+        context 'with a non existing broker' do
+            it 'raises and error' do
+                expect { SimpleMQTTClient.new('localhost') }.to raise_error(Errno::ECONNREFUSED)
+            end
+        end
+    end
 
+    describe '#subscribe' do
+        before(:each) do
+            mqtt_client = instance_double('MQTT::Client')
+            MQTT::Client.stub(:connect).and_return(mqtt_client)
+        end
+
+        context 'to params are passed correctly' do
+            let(:client) { SimpleMQTTClient.new('localhost') }
+        end
+    end
+
+    describe '#unsubscribe' do
+    end
+
+    describe '#publish' do
+    end
+
+    describe '#subscriptions' do
+    end
+end
+
+# server = double('server').as_null_object
+# TCPSocket.stub(:new).and_return(server)
+
+
+# @obj = MyClass.new
+# result = @obj.send(:my_private_method, arguments)
+# expect(....)
 
   # def test_connect_and_send_receive_messages_correctly
   #   cb_executed = false
@@ -76,41 +113,39 @@ class TestSimpleRubyMqttClient < MiniTest::Test
 
   # Private methods
 
-  def test_build_regex_from_pattern
-    skip
-  end
+  # def test_build_regex_from_pattern
+  #   skip
+  # end
 
 
-  def test_matches_wildcard_pattern
-    skip
-  end
+  # def test_matches_wildcard_pattern
+  #   skip
+  # end
 
 
-  def test_wildcard_regex
-    MQTT::Client.stub :connect, MQTT::Client.new do
-      sut = SimpleMQTTClient.new 'localhost'      
-      # Multi-level
-      assert sut.send :matches_wildcard_pattern, '/any/channel', '#'
-      assert sut.send :matches_wildcard_pattern, 'any/channel', '#'
-      assert sut.send :matches_wildcard_pattern, '', '#'
-      assert sut.send :matches_wildcard_pattern, '/a/channel', '/a/#'
-      # One single-level
-      assert sut.send :matches_wildcard_pattern, 'a_channel', '+'
-      assert sut.send :matches_wildcard_pattern, '/a_channel', '/+'
-      assert sut.send :matches_wildcard_pattern, 'a/channel', 'a/+'
-      assert sut.send :matches_wildcard_pattern, 'a/channel', '+/channel'
-      assert sut.send :matches_wildcard_pattern, '/a/channel', '/+/channel'
-      assert sut.send :matches_wildcard_pattern, '/a/channel/yup', '/a/+/yup'
-      # Two single-level
-      assert sut.send :matches_wildcard_pattern, 'a/channel', '+/+'
-      assert sut.send :matches_wildcard_pattern, '/a/channel', '/+/+'
-      assert sut.send :matches_wildcard_pattern, '/a/channel/yup', '/+/+/yup'
-      # Mix, Multi-level, one single level
-      assert sut.send :matches_wildcard_pattern, '/a/channel/yup', '/+/channel/#'
-      # Mix, Multi-level, two single level
-      assert sut.send :matches_wildcard_pattern, '/a/channel/yup/another', '/+/+/yup/#'
-    end
-  end
+  # def test_wildcard_regex
+  #   MQTT::Client.stub :connect, MQTT::Client.new do
+  #     sut = SimpleMQTTClient.new 'localhost'      
+  #     # Multi-level
+  #     assert sut.send :matches_wildcard_pattern, '/any/channel', '#'
+  #     assert sut.send :matches_wildcard_pattern, 'any/channel', '#'
+  #     assert sut.send :matches_wildcard_pattern, '', '#'
+  #     assert sut.send :matches_wildcard_pattern, '/a/channel', '/a/#'
+  #     # One single-level
+  #     assert sut.send :matches_wildcard_pattern, 'a_channel', '+'
+  #     assert sut.send :matches_wildcard_pattern, '/a_channel', '/+'
+  #     assert sut.send :matches_wildcard_pattern, 'a/channel', 'a/+'
+  #     assert sut.send :matches_wildcard_pattern, 'a/channel', '+/channel'
+  #     assert sut.send :matches_wildcard_pattern, '/a/channel', '/+/channel'
+  #     assert sut.send :matches_wildcard_pattern, '/a/channel/yup', '/a/+/yup'
+  #     # Two single-level
+  #     assert sut.send :matches_wildcard_pattern, 'a/channel', '+/+'
+  #     assert sut.send :matches_wildcard_pattern, '/a/channel', '/+/+'
+  #     assert sut.send :matches_wildcard_pattern, '/a/channel/yup', '/+/+/yup'
+  #     # Mix, Multi-level, one single level
+  #     assert sut.send :matches_wildcard_pattern, '/a/channel/yup', '/+/channel/#'
+  #     # Mix, Multi-level, two single level
+  #     assert sut.send :matches_wildcard_pattern, '/a/channel/yup/another', '/+/+/yup/#'
+  #   end
+  # end
 
-
-end
