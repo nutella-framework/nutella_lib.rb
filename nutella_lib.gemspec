@@ -8,10 +8,10 @@ Gem::Specification.new do |s|
   s.name = "nutella_lib".freeze
   s.version = "0.5.0"
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 2.3.8".freeze) if s.respond_to? :required_rubygems_version=
+  s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["Alessandro Gnoli".freeze]
-  s.date = "2019-10-26"
+  s.date = "2019-10-27"
   s.description = "Implements the nutella protocol and exposes it natively".freeze
   s.email = "tebemis@gmail.com".freeze
   s.extra_rdoc_files = [
