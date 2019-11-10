@@ -33,7 +33,6 @@ module Nutella
     def self.log; Nutella::App::Log; end
     def self.persist; Nutella::App::Persist; end
 
-
     # Parse command line arguments for app level components
     #
     # @param [Array] args command line arguments array
@@ -60,7 +59,5 @@ module Nutella
       Nutella.set_resource_id resource_id
     end
 
-
   end
-
 end

@@ -26,3 +26,6 @@ end
 
 # Make sure any exception in any thread kills the program
 Thread::abort_on_exception = true
+
+# Make sure we flush standard output after each write
+$stdout.sync = true

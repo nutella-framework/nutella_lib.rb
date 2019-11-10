@@ -1,5 +1,7 @@
 source 'http://rubygems.org'
 
+ruby '2.3.8'
+
 gem 'mqtt', '~> 0.5', '>= 0.5'
 gem 'ansi', '~> 1.5', '>= 1.5'
 gem 'mongo','~> 2.0'
