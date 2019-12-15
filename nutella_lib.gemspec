@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["Alessandro Gnoli".freeze]
-  s.date = "2019-11-10"
+  s.date = "2019-12-15"
   s.description = "Implements the nutella protocol and exposes it natively".freeze
   s.email = "tebemis@gmail.com".freeze
   s.extra_rdoc_files = [
